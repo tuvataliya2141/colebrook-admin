@@ -156,7 +156,7 @@ class AuthController extends Controller
 
     public function googleLogin(Request $request) {
         $access_token = $request->input('access_token');
-        $client = new \Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);
+        $client = new \Google_Client(['client_id' => env('GOOGLE_CLIENT_ID')]);        
         $payload = $client->verifyIdToken($access_token);
         if ($payload) {
             $email = $payload['email'];

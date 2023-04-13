@@ -20,8 +20,7 @@ use App\Models\State;
 
 class OrderController extends Controller
 {
-    public function store(Request $request, $set_paid = false)
-    {
+    public function store(Request $request) {
         $cartItems = Cart::where('user_id', $request->user_id)->get();
         if ($cartItems->isEmpty()) {
             return response()->json([
@@ -30,13 +29,14 @@ class OrderController extends Controller
                 'message' => translate('Cart is Empty')
             ]);
         }
-
+        
         $address = Address::where('id', $cartItems->first()->address_id)->first();
-
+        
         $user = User::find($request->user_id);
 
         $shippingAddress = [];
-        if($request->address_same_type == 0){
+
+        if((isset($request->address_same_type)) && ($request->address_same_type == 0 || $request->address_same_type == null)){
             if ($address != null) {
                 $shippingAddress['name']        = $user->name;
                 $shippingAddress['email']       = $user->email;
@@ -69,7 +69,7 @@ class OrderController extends Controller
                 $shippingAddress['lat_lang'] = $request->latitude . ',' . $request->longitude;
             }
         }
-        // dd($shippingAddress);
+
         $combined_order = new CombinedOrder;
         $combined_order->user_id = $user->id;
         $combined_order->shipping_address = json_encode($shippingAddress);
@@ -86,7 +86,7 @@ class OrderController extends Controller
             array_push($product_ids, $cartItem);
             $seller_products[$product->user_id] = $product_ids;
         }
-        // dd($seller_products);
+
         foreach ($seller_products as $seller_product) {
             $order = new Order;
             $order->combined_order_id = $combined_order->id;
@@ -98,10 +98,10 @@ class OrderController extends Controller
             $order->payment_status_viewed = '0';
             $order->code = date('Ymd-His') . rand(10, 99);
             $order->date = strtotime('now');
-            if($set_paid){
+            if($request->payment_id != null) {
                 $order->payment_status = 'paid';
-            }else{
-                $order->payment_status = 'unpaid';
+            } else {                
+                $order->payment_status = $request->payment_status;
             }
             if($request->sender_name){
                 $order->sender_name = $request->sender_name;
@@ -213,7 +213,7 @@ class OrderController extends Controller
         $combined_order->save();
 
         $orderjsonData = $this->addJsonOrder($order, $order_detail, $seller_product);
-            
+        
         if(json_decode($orderjsonData)->status == "success"){
             $responseData = json_decode($orderjsonData)->data;
             $waybill = '';
@@ -222,20 +222,25 @@ class OrderController extends Controller
             }
             $order->waybill = $waybill;
             $order->save();
+
+            Cart::where('user_id', $request->user_id)->delete();
+
+            return response()->json([
+                'combined_order_id' => $combined_order->id,
+                'result' => true,
+                'message' => translate('Your order has been placed successfully')
+            ]);
         } else {
+            OrderDetail::where('order_id', $order->id)->delete();
+            Order::where('id', $order->id)->delete();
+            $orderResponse = (array)json_decode($orderjsonData)->data;
+            $orderResponse = (array)$orderResponse[1];
+
             return response()->json([
                 'result' => false,
-                'message' => translate('Order unsuccessful')
+                'message' => translate($orderResponse['remark'])
             ]);
-        }
-
-        Cart::where('user_id', $request->user_id)->delete();
-
-        return response()->json([
-            'combined_order_id' => $combined_order->id,
-            'result' => true,
-            'message' => translate('Your order has been placed successfully')
-        ]);
+        }        
     }
 
     public function addJsonOrder($order, $order_detail, $seller_product)
@@ -266,8 +271,10 @@ class OrderController extends Controller
         }
         if($order->payment_type == 'cash_on_delivery'){
             $payment_type = 'cod';
+            $codmount = $order->grand_total;
         } else {
             $payment_type = 'Prepaid';
+            $codmount = 0;
         }
         $order_date = date("d-m-Y",$order->date);
         $jsonData = '{
@@ -316,7 +323,7 @@ class OrderController extends Controller
                     "first_attemp_discount" : "0",
                     "cod_charges" : "0",
                     "advance_amount" : "0",
-                    "cod_amount" : "1783",
+                    "cod_amount" : "'.$codmount.'",
                     "payment_mode" : "'. $payment_type .'",
                     "reseller_name" : "",
                     "eway_bill_number" : "",
@@ -444,6 +451,31 @@ class OrderController extends Controller
                 ],200);
             }
         } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'Data not found',
+                'data' => []
+            ],200);
+        }
+    }
+
+    public function userOrderSummary($id) {
+        $orderSummary = OrderDetail::select('order_details.*', 'products.thumbnail_img', 'products.name')
+                        ->where('order_details.order_id', $id)
+                        ->join('products', 'order_details.product_id', '=', 'products.id')
+                        ->get();
+
+        foreach ($orderSummary as $order) {
+            $order->thumbnailImage = api_asset($order->thumbnail_img);
+        }
+        
+        if($orderSummary){
+            return response()->json([
+                'status' => true,
+                'message' => 'List fatch successfully',
+                'data' => $orderSummary
+            ],200);
+        }else{
             return response()->json([
                 'status' => false,
                 'message' => 'Data not found',

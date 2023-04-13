@@ -34,7 +34,6 @@ class ProductCollection extends ResourceCollection
                 } else {
                     $Msize = [];
                 }
-                // dd($data);
                 return [
                     'id' => $data->id,
                     'name' => $data->getTranslation('name'),
@@ -42,7 +41,7 @@ class ProductCollection extends ResourceCollection
                     'photos' => explode(',', $data->photos),
                     'brand' => isset($data->brand->name) ? $data->brand->name : '',
                     'multipleSize' => $Msize,
-                    'variants' => $data->stocks[0],
+                    'variants' => isset($data->stocks[0]) ? $data->stocks[0] : '',
                     'thumbnail_image' => $imagePath,
                     'reviews' => $data->reviews,
                     'base_price' => (double) home_base_price($data, false),
@@ -63,6 +62,8 @@ class ProductCollection extends ResourceCollection
                         'related' => route('products.related', $data->id)
                     ]
                 ];
+                // if(isset($data->stocks[0])) {
+                // }
             })
         ];
     }

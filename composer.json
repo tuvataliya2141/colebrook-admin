@@ -20,6 +20,7 @@
         "maatwebsite/excel": "^3.1",
         "paypal/paypal-checkout-sdk": "dev-master",
         "razorpay/razorpay": "2.0.0",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "stripe/stripe-php": "^7.95"
     },
     "require-dev": {

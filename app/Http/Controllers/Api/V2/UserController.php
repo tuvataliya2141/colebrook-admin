@@ -25,6 +25,8 @@ class UserController extends Controller
         if ($request->addressId == 0) {
             $address = new Address;
             $address->user_id = $request->userId;
+            $address->name = $request->name;
+            $address->phone = $request->phone;
             $address->address = $request->address;
             $address->country_id = $request->Country;
             $address->state_id = $request->state;
@@ -40,6 +42,8 @@ class UserController extends Controller
         } else {
             $address = Address::findOrFail($request->addressId);
             if ($address) {
+                $address->name = $request->name;
+                $address->phone = $request->phone;
                 $address->address = $request->address;
                 $address->country_id = $request->Country;
                 $address->state_id = $request->state;

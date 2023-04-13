@@ -2,7 +2,7 @@
 
 
 Route::get('v2/auth/login/google', 'Api\V2\AuthController@googleLogin')->middleware('web');
-Route::get('v2/auth/login/google', 'Api\V2\AuthController@googleLogin')->middleware('web');
+Route::get('v2/auth/login/facebook', 'Api\V2\AuthController@facebookLogin')->middleware('web');
 
 Route::group(['prefix' => 'v2/auth', 'middleware' => ['app_language']], function() {
     Route::post('login', 'Api\V2\AuthController@login');
@@ -61,6 +61,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language','auth:api']], fu
     Route::get('brands/top', 'Api\V2\BrandController@top');
     Route::post('order/userOrderList', 'Api\V2\OrderController@userOrderList')->middleware('auth:api');
     Route::get('order/userOrderDetail/{id}', 'Api\V2\OrderController@userOrderDetail')->middleware('auth:api');
+    Route::get('order/userOrderSummary/{id}', 'Api\V2\OrderController@userOrderSummary')->middleware('auth:api');
 
     Route::get('categories/featured', 'Api\V2\CategoryController@featured');
     Route::get('categories/home', 'Api\V2\CategoryController@home');
@@ -177,7 +178,10 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language','auth:api']], fu
     Route::post('profile/check-phone-and-email', 'Api\V2\ProfileController@checkIfPhoneAndEmailAvailable')->middleware('auth:api');
 
     // help and support routes
-    Route::post('ticket-support', 'Api\V2\SupportTicketController@tikect_support');
+    Route::get('user/supportTicketsList/{id}', 'Api\V2\SupportTicketController@supportTicketsList')->middleware('auth:api');
+    Route::get('user/supportTicketDetails/{id}', 'Api\V2\SupportTicketController@supportTicketDetails')->middleware('auth:api');
+    Route::post('user/ticketReply', 'Api\V2\SupportTicketController@ticketReply')->middleware('auth:api');
+    Route::post('ticket-support', 'Api\V2\SupportTicketController@tikect_support')->middleware('auth:api');
 
 
     
