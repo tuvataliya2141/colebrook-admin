@@ -7,9 +7,13 @@ use App\Mail\SupportMailManager;
 use App\Models\Ticket;
 use App\Models\TicketReply;
 use App\Models\User;
+use App\Models\Upload;
 use Illuminate\Http\Request;
 use App\Models\OrderDetail;
 use Mail;
+use Image;
+use Storage;
+
 
 class SupportTicketController extends Controller
 {
@@ -71,13 +75,109 @@ class SupportTicketController extends Controller
 
     public function tikect_support(Request $request)
     {
+        // dd($request->all());
         $ticket = new Ticket();
         $ticket->code = max(100000, (Ticket::latest()->first() != null ? Ticket::latest()->first()->code + 1 : 0)).date('s');
         $ticket->user_id = auth()->user()->id;
         $ticket->subject = $request->subject;
         $ticket->details = $request->details;
-        $ticket->files = $request->attachments;
+        if ($request->attachments != null && $request->attachments != "") {
+            //  dd($request->attachments->getRealPath());
+            $type = array(
+                "jpg"=>"image",
+                "jpeg"=>"image",
+                "png"=>"image",
+                "svg"=>"image",
+                "webp"=>"image",
+                "gif"=>"image",
+                "mp4"=>"video",
+                "mpg"=>"video",
+                "mpeg"=>"video",
+                "webm"=>"video",
+                "ogg"=>"video",
+                "avi"=>"video",
+                "mov"=>"video",
+                "flv"=>"video",
+                "swf"=>"video",
+                "mkv"=>"video",
+                "wmv"=>"video",
+                "wma"=>"audio",
+                "aac"=>"audio",
+                "wav"=>"audio",
+                "mp3"=>"audio",
+                "zip"=>"archive",
+                "rar"=>"archive",
+                "7z"=>"archive",
+                "doc"=>"document",
+                "txt"=>"document",
+                "docx"=>"document",
+                "pdf"=>"document",
+                "csv"=>"document",
+                "xml"=>"document",
+                "ods"=>"document",
+                "xlr"=>"document",
+                "xls"=>"document",
+                "xlsx"=>"document"
+            );
+            $upload = new Upload;
+            $extension = strtolower($request->attachments->getClientOriginalExtension());
 
+            if(isset($type[$extension])){
+                $upload->file_original_name = 'Support-Ticket';
+                
+                $path = $request->attachments->store('uploads/all', 'local');
+                $size = $request->attachments->getSize();
+
+                // Return MIME type ala mimetype extension
+                $finfo = finfo_open(FILEINFO_MIME_TYPE); 
+
+                // Get the MIME type of the file
+                $file_mime = finfo_file($finfo, base_path('public/').$path);
+
+                if($type[$extension] == 'image' && get_setting('disable_image_optimization') != 1){
+                    try {
+                        $img = Image::make($request->attachments->getRealPath())->encode();
+                        $height = $img->height();
+                        $width = $img->width();
+                        if($width > $height && $width > 1500){
+                            $img->resize(1500, null, function ($constraint) {
+                                $constraint->aspectRatio();
+                            });
+                        }elseif ($height > 1500) {
+                            $img->resize(null, 800, function ($constraint) {
+                                $constraint->aspectRatio();
+                            });
+                        }
+                        $img->save(base_path('public/').$path);
+                        clearstatcache();
+                        $size = $img->filesize();
+
+                    } catch (\Exception $e) {
+                        //dd($e);
+                    }
+                }
+                
+                if (env('FILESYSTEM_DRIVER') == 's3') {
+                    Storage::disk('s3')->put(
+                        $path,
+                        file_get_contents(base_path('public/').$path),
+                        [
+                            'visibility' => 'public',
+                            'ContentType' =>  $extension == 'svg' ? 'image/svg+xml' : $file_mime
+                        ]
+                    );
+                }
+
+                $upload->extension = $extension;
+                $upload->file_name = $path;
+                $upload->user_id = auth()->user()->id;
+                $upload->type = $type[$upload->extension];
+                $upload->file_size = $size;
+                $upload->save();
+                $ticket->files = $upload->id;
+            }
+        }
+        // dd($ticket);
         if($ticket->save()){
             $this->send_support_mail_to_admin($ticket);
             flash(translate('Ticket has been sent successfully'))->success();
