@@ -24,6 +24,7 @@ class AddressCollection extends ResourceCollection
                 return [
                     'id'      =>(int) $data->id,
                     'user_id' =>(int) $data->user_id,
+                    'name'      =>$data->name,
                     'address' => $data->address,
                     'country_id' => (int)  $data->country_id,
                     'state_id' =>  (int) $data->state_id,

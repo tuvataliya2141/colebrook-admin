@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V2;
 use App\Http\Controllers\Controller;
 use App\Mail\SupportMailManager;
 use App\Models\Ticket;
+use App\Models\TicketReply;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\OrderDetail;
@@ -12,6 +13,62 @@ use Mail;
 
 class SupportTicketController extends Controller
 {
+    public function supportTicketsList($id) {
+        $tickets = Ticket::where('user_id', $id)->get();
+
+        if(count($tickets) > 0) {
+            return response()->json([
+                'status' => true,
+                'message' => translate('Data get successfully'),
+                'data' => $tickets
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => translate('No tickets available'),
+            ]);
+        }
+    }
+
+    public function supportTicketDetails($id) {
+        $ticket = Ticket::where('id', $id)->first();
+        
+        if($ticket) {
+            $ticket['replies'] = TicketReply::where('ticket_id', $id)->orderBy('id', 'ASC')->get();
+            return response()->json([
+                'status' => true,
+                'message' => translate('Data get successfully'),
+                'data' => $ticket
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => translate('Ticket Details not available'),
+            ]);
+        }
+    }
+
+    public function ticketReply(Request $request) {
+        $ticket = Ticket::where('id', $request->TicketId)->where('user_id', $request->user_id)->first();
+        if ($ticket) {
+            $ticketReply = new TicketReply();
+            $ticketReply->ticket_id = $request->TicketId;
+            $ticketReply->user_id = $request->user_id;
+            $ticketReply->details = $request->details;
+            if ($ticketReply->save()) {
+                return response()->json([
+                    'status' => true,
+                    'message' => translate('Ticket has been sent successfully'),
+                ]);
+            }
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => translate('Ticket Details not available'),
+            ]);
+        }
+    }
+
     public function tikect_support(Request $request)
     {
         $ticket = new Ticket();

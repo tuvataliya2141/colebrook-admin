@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Stripe\Exception\CardException;
 use Stripe\PaymentIntent;
 use Stripe\Stripe;
+use Stripe\Charge;
 
 class StripeController extends Controller
 {
@@ -77,5 +78,32 @@ class StripeController extends Controller
     public function cancel(Request $request)
     {
         return response()->json(['result' => false, 'message' => translate("Payment is cancelled")]);
+    }
+
+    public function charge(Request $request) {
+        $token = $request->token_id;
+        $amount = $request->amount; // Replace with the actual amount
+
+        $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+        
+        try {
+            $charge = $stripe->charges->create([
+                'amount' => $amount,
+                'currency' => 'inr',
+                'description' => 'Example charge',
+                'source' => $token,
+            ]);
+
+            // Return a response to indicate that the payment was successful
+            return response()->json([
+                'success' => true,
+                'charge' => $charge,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
 }

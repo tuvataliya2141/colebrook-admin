@@ -42,13 +42,6 @@
                 <input type="text" class="form-control" id="update_tracking_code" value="{{ $order->tracking_code }}">
             </div>
         </div>
-        <div class="mb-3">
-            @php
-                                $removedXML = '<?xml version="1.0" encoding="UTF-8"?>';
-                            @endphp
-                            {!! str_replace($removedXML,"", QrCode::size(100)->generate($order->code)) !!}
-        </div>
-
         <!-- added and modifed by Arun on 04-Dec-21-->
         <div class="row gutters-5">
             <div class="col text-center text-md-left">
@@ -65,23 +58,13 @@
                 </td>.<td>
                 </td><td valign=top>
                     <strong class="text-main">Sender Info</strong><br><br>
-                    <strong class="text-main">{{ $order->sender_name }}</strong><br>
+                    <strong class="text-main">Kingoodie</strong><br>
                     {{ $order->sender_adrs }}<br>
-                    {{ $order->sender_message }}<br>
-
-                </td>
-                                <td valign=top>
-                    <strong class="text-main">Delivery Info</strong><br><br>
-                    <strong class="text-main">{{ $order->delivery_type}}</strong><br>
-                    {{ $order->delivery_date }}<br>
-                    {{ $order->delivery_timeslot }}<br>
 
                 </td>
                 </tr>
                 </table>
                 <!-- added and modifed by Arun on 04-Dec-21-->
-
-
                 @if ($order->manual_payment && is_array(json_decode($order->manual_payment_data, true)))
                 <br>
                 <strong class="text-main">{{ translate('Payment Information') }}</strong><br>
@@ -152,14 +135,14 @@
                             <td>{{ $key+1 }}</td>
                             <td>
                                 @if ($orderDetail->product != null)
-                                    <a href="{{ route('product', $orderDetail->product->slug) }}" target="_blank"><img height="50" src="{{ uploaded_asset($orderDetail->product->thumbnail_img) }}"></a>                                
+                                    <a href="#" target="_blank"><img height="50" src="{{ uploaded_asset($orderDetail->product->thumbnail_img) }}"></a>                                
                                 @else
                                     <strong>{{ translate('N/A') }}</strong>
                                 @endif
                             </td>
                             <td>
                                 @if ($orderDetail->product != null)
-                                    <strong><a href="{{ route('product', $orderDetail->product->slug) }}" target="_blank" class="text-muted">{{ $orderDetail->product->getTranslation('name') }}</a></strong>
+                                    <strong><a href="#" target="_blank" class="text-muted">{{ $orderDetail->product->getTranslation('name') }}</a></strong>
                                     <small>{{ $orderDetail->variation }}</small>                                
                                 @else
                                     <strong>{{ translate('Product Unavailable') }}</strong>

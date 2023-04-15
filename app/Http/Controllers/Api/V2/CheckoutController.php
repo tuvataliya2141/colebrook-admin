@@ -138,27 +138,24 @@ class CheckoutController
             $address = Address::updateOrCreate([
                 'user_id' => $request->user_id,
                 'phone' => $request->phone,
-                'name' => $request->first_name,
-                'address' => $request->address_1,
+                'name' => $request->name,
+                'address' => $request->address,
                 'postal_code' => $request->postal_code,
                 'country_id' => $request->country_id,
                 'state_id' => $request->state_id,
                 'city_id' => $request->city_id,
-                'set_default' => 0,
             ],
             [
                 'user_id' => $request->user_id,
-                'name' => $request->first_name,
-                'address' => $request->address_1,
+                'name' => $request->name,
+                'address' => $request->address,
                 'country_id' => $request->country_id,
                 'state_id' => $request->state_id,
                 'city_id' => $request->city_id,
-                'longitude' => $request->longitude,
-                'latitude' => $request->latitude,
                 'postal_code' => $request->postal_code,
                 'phone' => $request->phone,
-                'set_default' => 1,
             ]);
+
             if($request->address_same_type != 0){
                 $cart = $cart->update([
                     'temp_user_id' => null,
@@ -173,14 +170,24 @@ class CheckoutController
             }
             if($request->payment_method == 1){
                 $order = new OrderController;
-                $order->store($request);
+                $responceOrder = $order->store($request);
+
+                if($responceOrder->getData()->result == 'true') {
+                    $response = [
+                        'status' => true,
+                        'message' => 'Order Successfully Order',
+                        'login_type' => $request->login_type
+                    ];
+                    return response()->json($response,200);
+                } else {
+                    $response = [
+                        'status' => false,
+                        'message' => $responceOrder->getData()->message
+                    ];
+                    return response()->json($response,200);
+                }
             }
-            $response = [
-                'status' => true,
-                'message' => 'Order Successfully Order',
-                'login_type' => $request->login_type
-            ];
-            return response()->json($response,200);
+
         }else{
             $response = [
                 'status' => false,
