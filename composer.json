@@ -21,7 +21,7 @@
         "paypal/paypal-checkout-sdk": "dev-master",
         "razorpay/razorpay": "2.0.0",
         "simplesoftwareio/simple-qrcode": "^4.2",
-        "stripe/stripe-php": "^7.95"
+        "stripe/stripe-php": "^10.12"
     },
     "require-dev": {
         "facade/ignition": "^2.3.6",

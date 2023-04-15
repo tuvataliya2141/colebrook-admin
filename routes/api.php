@@ -157,6 +157,8 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language','auth:api']], fu
     Route::any('/stripe/success', 'Api\V2\StripeController@success')->name('api.stripe.success');
     Route::any('/stripe/cancel', 'Api\V2\StripeController@cancel')->name('api.stripe.cancel');
 
+    Route::post('stripe/charge', 'Api\V2\StripeController@charge');
+
     Route::any('paypal/payment/url', 'Api\V2\PaypalController@getUrl')->name('api.paypal.url');
     Route::any('paypal/payment/done', 'Api\V2\PaypalController@getDone')->name('api.paypal.done');
     Route::any('paypal/payment/cancel', 'Api\V2\PaypalController@getCancel')->name('api.paypal.cancel');
