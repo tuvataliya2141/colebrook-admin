@@ -483,6 +483,7 @@ class OrderController extends Controller
                 'data' => []
             ],200);
         }
+    }
 
     public function trackOrder(Request $request)
     {
