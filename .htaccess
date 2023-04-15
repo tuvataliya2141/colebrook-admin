@@ -42,3 +42,11 @@ Options -Indexes
     ExpiresByType image/x-icon "access plus 1 year"
     ExpiresDefault "access plus 1 days"
 </IfModule>
+
+#BEGIN increasing PHP values
+php_value max_input_time 2048
+php_value upload_max_filesize 2G
+php_value max_execution_time 2048
+php_value memory_limit 2G
+php_value post_max_size 2048M
+#END increasing PHP value

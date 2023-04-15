@@ -52,6 +52,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function() {
     Route::post('coupon/apply', 'Api\V2\CouponController@apply');
     Route::get('reviews/product/{id}', 'Api\V2\ReviewController@index')->name('api.reviews.index');
     Route::post('reviews/submit', 'Api\V2\ReviewController@submit')->name('api.reviews.submit');
+    Route::post('check-pincode', 'Api\V2\OrderController@check_pincode');
 
 }); 
 
@@ -61,7 +62,11 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language','auth:api']], fu
     Route::get('brands/top', 'Api\V2\BrandController@top');
     Route::post('order/userOrderList', 'Api\V2\OrderController@userOrderList')->middleware('auth:api');
     Route::get('order/userOrderDetail/{id}', 'Api\V2\OrderController@userOrderDetail')->middleware('auth:api');
+
     Route::get('order/userOrderSummary/{id}', 'Api\V2\OrderController@userOrderSummary')->middleware('auth:api');
+
+    Route::post('track-order', 'Api\V2\OrderController@trackOrder')->middleware('auth:api');
+
 
     Route::get('categories/featured', 'Api\V2\CategoryController@featured');
     Route::get('categories/home', 'Api\V2\CategoryController@home');

@@ -459,6 +459,7 @@ class OrderController extends Controller
         }
     }
 
+
     public function userOrderSummary($id) {
         $orderSummary = OrderDetail::select('order_details.*', 'products.thumbnail_img', 'products.name')
                         ->where('order_details.order_id', $id)
@@ -482,5 +483,123 @@ class OrderController extends Controller
                 'data' => []
             ],200);
         }
+
+    public function trackOrder(Request $request)
+    {
+        $order = Order::where('user_id',$request->user_id)->where('code', $request->order_code)->first();
+        if ($order == Null) {
+            return response()->json([
+                'result' => false,
+                'message' => translate('Order code incorrect')
+            ]);
+        }
+        $awb_order = $order->waybill;
+        if($awb_order != null){
+            $jsonData = ' {
+                "data":{
+                    "awb_number_list"    : "'. $awb_order .'",      #List of AWB Number which you want to track.
+                    "access_token" : "8ujik47cea32ed386b1f65c85fd9aaaf",
+                    "secret_key" : "65tghjmads9dbcd892ad4987jmn602a7"
+                    }
+                }';
+            // dd(json_encode($jsonData));    
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL             => "https://pre-alpha.ithinklogistics.com/api_v3/order/track.json",
+                CURLOPT_RETURNTRANSFER  => true,
+                CURLOPT_ENCODING        => "",
+                CURLOPT_MAXREDIRS       => 10,
+                CURLOPT_TIMEOUT         => 30,
+                CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST   => "POST",
+                CURLOPT_POSTFIELDS      => json_encode($jsonData),
+                CURLOPT_HTTPHEADER      => array(
+                    "cache-control: no-cache",
+                    "content-type: application/json"
+                )
+            ));
+
+            $response = curl_exec($curl);
+            $err      = curl_error($curl);
+            curl_close($curl);
+            if ($err) 
+            {
+                return response()->json([
+                    'result' => false,
+                    'message' => "cURL Error #:" . $err
+                ]);
+            }
+            else
+            {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data fatch successfully',
+                    'data' => json_decode($response)
+                ],200);
+            }
+        } else {
+            return response()->json([
+                'result' => false,
+                'message' => translate('Order code incorrect')
+            ]);
+        }   
+    }
+
+
+    public function check_pincode(Request $request)
+    {
+        $pincode = $request->pincode;
+        // dd($pincode);
+        if ($pincode) {
+
+            $jsonData = '  {
+                "data":{
+                    "pincode"  : "'. $pincode .'",      #pincode whose data is needed.
+                    "access_token" : "8ujik47cea32ed386b1f65c85fd9aaaf",
+                    "secret_key" : "65tghjmads9dbcd892ad4987jmn602a7"
+                }
+            }';
+            // dd(json_encode($jsonData));    
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL             => "https://pre-alpha.ithinklogistics.com/api_v3/pincode/check.json",
+                CURLOPT_RETURNTRANSFER  => true,
+                CURLOPT_ENCODING        => "",
+                CURLOPT_MAXREDIRS       => 10,
+                CURLOPT_TIMEOUT         => 30,
+                CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST   => "POST",
+                CURLOPT_POSTFIELDS      => json_encode($jsonData),
+                CURLOPT_HTTPHEADER      => array(
+                    "cache-control: no-cache",
+                    "content-type: application/json"
+                )
+            ));
+
+            $response = curl_exec($curl);
+            $err      = curl_error($curl);
+            curl_close($curl);
+            if ($err) 
+            {
+                return response()->json([
+                    'result' => false,
+                    'message' => "cURL Error #:" . $err
+                ]);
+            }
+            else
+            {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data fatch successfully',
+                    'data' => json_decode($response)
+                ],200);
+            }
+            
+        } else {
+            return response()->json([
+                'result' => false,
+                'message' => translate('Pin code incorrect')
+            ]);
+        } 
     }
 }
