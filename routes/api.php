@@ -53,7 +53,7 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language']], function() {
     Route::get('reviews/product/{id}', 'Api\V2\ReviewController@index')->name('api.reviews.index');
     Route::post('reviews/submit', 'Api\V2\ReviewController@submit')->name('api.reviews.submit');
     Route::post('check-pincode', 'Api\V2\OrderController@check_pincode');
-
+    Route::post('order-cancel', 'Api\V2\OrderController@order_cancel');
 }); 
 
 Route::group(['prefix' => 'v2', 'middleware' => ['app_language','auth:api']], function() {
@@ -189,11 +189,6 @@ Route::group(['prefix' => 'v2', 'middleware' => ['app_language','auth:api']], fu
     Route::get('user/supportTicketDetails/{id}', 'Api\V2\SupportTicketController@supportTicketDetails')->middleware('auth:api');
     Route::post('user/ticketReply', 'Api\V2\SupportTicketController@ticketReply')->middleware('auth:api');
     Route::post('ticket-support', 'Api\V2\SupportTicketController@tikect_support')->middleware('auth:api');
-
-
-    
-
-    
 });
 
 Route::fallback(function() {

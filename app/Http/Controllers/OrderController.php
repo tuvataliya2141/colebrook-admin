@@ -347,4 +347,63 @@ class OrderController extends Controller
         return 1;
     }
 
+    public function cancel_order($orderId)
+    {
+        $orderID = decrypt($orderId);
+        $order = Order::where('id', $orderID)->first();
+        if ($order->waybill) {
+            $awb_numbers = $order->waybill;
+            $jsonData = '  {
+                "data":{
+                    "awb_numbers" : "'. $awb_numbers .'",
+                    "access_token" : "5a7b40197cd919337501dd6e9a3aad9a",
+                    "secret_key" : "2b54c373427be180d1899400eeb21aab"
+                }
+            }';
+            // dd(json_encode($jsonData));    
+            $curl = curl_init();
+                curl_setopt_array($curl, array(
+                CURLOPT_URL             => "https://pre-alpha.ithinklogistics.com/api_v3/order/cancel.json",
+                CURLOPT_RETURNTRANSFER  => true,
+                CURLOPT_ENCODING        => "",
+                CURLOPT_MAXREDIRS       => 10,
+                CURLOPT_TIMEOUT         => 30,
+                CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST   => "POST",
+                CURLOPT_POSTFIELDS      => $jsonData,
+                CURLOPT_HTTPHEADER      => array(
+                    "cache-control: no-cache",
+                    "content-type: application/json"
+                )
+            ));
+
+            $response = curl_exec($curl);
+            $err      = curl_error($curl);
+            curl_close($curl);
+        }
+        $order->delivery_viewed = '0';
+        $order->delivery_status = 'cancelled';
+        $order->save();
+        foreach ($order->orderDetails as $key => $orderDetail) {
+
+            $orderDetail->delivery_status = 'cancelled';
+            $orderDetail->save();
+            $variant = $orderDetail->variation;
+            if ($orderDetail->variation == null) {
+                $variant = '';
+            }
+
+            $product_stock = ProductStock::where('product_id', $orderDetail->product_id)
+                ->where('variant', $variant)
+                ->first();
+
+            if ($product_stock != null) {
+                $product_stock->qty += $orderDetail->quantity;
+                $product_stock->save();
+            }
+            
+        }
+        flash(translate('Order has been cancel successfully'))->success();
+        return back();
+    }
 }

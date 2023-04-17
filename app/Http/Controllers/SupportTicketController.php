@@ -119,9 +119,14 @@ class SupportTicketController extends Controller
     
     public function admin_show($id)
     {
-        $ticket = Ticket::findOrFail(decrypt($id));
+        // $ticket = Ticket::findOrFail(decrypt($id));
+        $ticket = Ticket::where('id', decrypt($id))->first();
+        // dd($ticket);
         $ticket->viewed = 1;
         $ticket->save();
+        $ticket['replies'] = TicketReply::where('ticket_id', decrypt($id))->orderBy('id', 'ASC')->get();
+        
+        // dd($ticket->ticketreplies);
         return view('backend.support.support_tickets.show', compact('ticket'));
     }
 

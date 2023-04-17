@@ -17,6 +17,121 @@
             </div>
         </div>
         <div class="card-body">
+            <div class="pad-top">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="media">
+                                    <a class="media-left" href="#">
+                                        @if($ticket->user->avatar_original != null)
+                                            <span class="avatar avatar-sm mr-3"><img src="{{ uploaded_asset($ticket->user->avatar_original) }}"></span>
+                                        @else
+                                            <span class="avatar avatar-sm mr-3"><img src="{{ static_asset('assets/img/avatar-place.png') }}"></span>
+                                        @endif
+                                    </a>
+                                    <div class="media-body">
+                                        <div class="">
+                                            <span class="text-bold h6">{{ $ticket->user->name }}</span>
+                                            <p class="text-muted text-sm fs-11">{{ $ticket->created_at }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    @php echo $ticket->details; @endphp
+                                    <br>
+                                    @foreach ((explode(",",$ticket->files)) as $key => $file)
+                                        @php $file_detail = \App\Models\Upload::where('id', $file)->first(); @endphp
+                                        @if($file_detail != null)
+                                            <a href="{{ uploaded_asset($file) }}" download="" class="badge badge-lg badge-inline badge-light mb-1">
+                                                <i class="las la-download text-muted">{{ $file_detail->file_original_name.'.'.$file_detail->extension }}</i>
+                                            </a>
+                                            <br>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    @foreach($ticket->replies as $ticketreply)
+                        @if($ticketreply->user_id == Auth::user()->id)
+                            <li class="list-group-item">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <span class="float-right">
+                                            <div class="media">
+                                                <a class="media-left" href="#">
+                                                    @if($ticketreply->user->avatar_original != null)
+                                                        <span class="avatar avatar-sm mr-3"><img src="{{ uploaded_asset($ticketreply->user->avatar_original) }}"></span>
+                                                    @else
+                                                        <span class="avatar avatar-sm mr-3"><img src="{{ static_asset('assets/img/avatar-place.png') }}"></span>
+                                                    @endif
+                                                </a>
+                                                <div class="media-body">
+                                                    <div class="">
+                                                        <span class="text-bold h6">{{ $ticketreply->user->name }}</span>
+                                                        <p class="text-muted text-sm fs-11">{{$ticketreply->created_at}}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="">
+                                                @php echo $ticketreply->details; @endphp
+            
+                                                <div class="mt-3">
+                                                @foreach ((explode(",",$ticketreply->files)) as $key => $file)
+                                                    @php $file_detail = \App\Models\Upload::where('id', $file)->first(); @endphp
+                                                    @if($file_detail != null)
+                                                        <a href="{{ uploaded_asset($file) }}" download="" class="badge badge-lg badge-inline badge-light mb-1">
+                                                            <i class="las la-paperclip mr-2">{{ $file_detail->file_original_name.'.'.$file_detail->extension }}</i>
+                                                        </a>
+                                                    @endif
+                                                @endforeach
+                                                </div>
+                                            </div>    
+                                        </span>
+                                    </div>
+                                </div>
+                            </li>
+                        @else  
+                            <li class="list-group-item px-0">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="media">
+                                            <a class="media-left" href="#">
+                                                @if($ticketreply->user->avatar_original != null)
+                                                    <span class="avatar avatar-sm mr-3"><img src="{{ uploaded_asset($ticketreply->user->avatar_original) }}"></span>
+                                                @else
+                                                    <span class="avatar avatar-sm mr-3"><img src="{{ static_asset('assets/img/avatar-place.png') }}"></span>
+                                                @endif
+                                            </a>
+                                            <div class="media-body">
+                                                <div class="">
+                                                    <span class="text-bold h6">{{ $ticketreply->user->name }}</span>
+                                                    <p class="text-muted text-sm fs-11">{{$ticketreply->created_at}}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="">
+                                            @php echo $ticketreply->details; @endphp
+
+                                            <div class="mt-3">
+                                            @foreach ((explode(",",$ticketreply->files)) as $key => $file)
+                                                @php $file_detail = \App\Models\Upload::where('id', $file)->first(); @endphp
+                                                @if($file_detail != null)
+                                                    <a href="{{ uploaded_asset($file) }}" download="" class="badge badge-lg badge-inline badge-light mb-1">
+                                                        <i class="las la-paperclip mr-2">{{ $file_detail->file_original_name.'.'.$file_detail->extension }}</i>
+                                                    </a>
+                                                @endif
+                                            @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        @endif
+                    @endforeach
+                </ul>
+            </div>
             <form action="{{ route('support_ticket.admin_store') }}" method="post" id="ticket-reply-form" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" name="ticket_id" value="{{$ticket->id}}" required>
@@ -53,73 +168,55 @@
                       </div>
                 </div>
             </form>
-            <div class="pad-top">
-                <ul class="list-group list-group-flush">
-                    @foreach($ticket->ticketreplies as $ticketreply)
-                        <li class="list-group-item px-0">
-                            <div class="media">
-                                <a class="media-left" href="#">
-                                    @if($ticketreply->user->avatar_original != null)
-                                        <span class="avatar avatar-sm mr-3"><img src="{{ uploaded_asset($ticketreply->user->avatar_original) }}"></span>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <table class="aiz-table" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>{{ translate('Order Code') }}</th>
+                        <th data-breakpoints="md">{{ translate('Num. of Products') }}</th>
+                        <th data-breakpoints="md">{{ translate('Customer') }}</th>
+                        <th data-breakpoints="md">{{ translate('Amount') }}</th>
+                        <th data-breakpoints="md">{{ translate('Delivery Status') }}</th>
+                        <th data-breakpoints="md">{{ translate('Payment Status') }}</th>
+                        <th data-breakpoints="md">{{ translate('Option') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                        {{-- @foreach ($tickets as $key => $ticket) --}}
+                        @php $order_detail = \App\Models\Order::where('id', $ticket->product_id)->first(); @endphp
+                        @if ($order_detail != null)
+                            <tr>
+                                <td>#{{ $order_detail->code }}</td>
+                                <td>{{ count($order_detail->orderDetails) }}</td>
+                                <td>{{ $order_detail->user->name }}</td>
+                                <td>{{ single_price($order_detail->grand_total) }}</td>
+                                <td>@php
+                                    $status = $order_detail->delivery_status;
+                                    if($order_detail->delivery_status == 'cancelled') {
+                                        $status = '<span class="badge badge-inline badge-danger">'.translate('Cancel').'</span>';
+                                    }
+    
+                                    @endphp
+                                    {!! $status !!}
+                                </td>
+                                <td> @if ($order_detail->payment_status == 'paid')
+                                    <span class="badge badge-inline badge-success">{{translate('Paid')}}</span>
                                     @else
-                                        <span class="avatar avatar-sm mr-3"><img src="{{ static_asset('assets/img/avatar-place.png') }}"></span>
+                                    <span class="badge badge-inline badge-danger">{{translate('Unpaid')}}</span>
                                     @endif
-                                </a>
-                                <div class="media-body">
-                                    <div class="">
-                                        <span class="text-bold h6">{{ $ticketreply->user->name }}</span>
-                                        <p class="text-muted text-sm fs-11">{{$ticketreply->created_at}}</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="">
-                                @php echo $ticketreply->details; @endphp
-
-                                <div class="mt-3">
-                                @foreach ((explode(",",$ticketreply->files)) as $key => $file)
-                                    @php $file_detail = \App\Models\Upload::where('id', $file)->first(); @endphp
-                                    @if($file_detail != null)
-                                        <a href="{{ uploaded_asset($file) }}" download="" class="badge badge-lg badge-inline badge-light mb-1">
-                                            <i class="las la-paperclip mr-2">{{ $file_detail->file_original_name.'.'.$file_detail->extension }}</i>
-                                        </a>
-                                    @endif
-                                @endforeach
-                                </div>
-                            </div>
-                        </li>
-                    @endforeach
-                    {{-- <li class="list-group-item px-0">
-                        <div class="media">
-                            <a class="media-left" href="#">
-                                @if($ticket->user->avatar_original != null)
-                                    <span class="avatar avatar-sm m-3"><img src="{{ uploaded_asset($ticket->user->avatar_original) }}"></span>
-                                @else
-                                    <span class="avatar avatar-sm m-3"><img src="{{ static_asset('assets/img/avatar-place.png') }}"></span>
-                                @endif
-                            </a>
-                            <div class="media-body">
-                                <div class="comment-header">
-                                    <span class="text-bold h6 text-muted">{{ $ticket->user->name }}</span>
-                                    <p class="text-muted text-sm fs-11">{{ $ticket->created_at }}</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            @php echo $ticket->details; @endphp
-                            <br>
-                            @foreach ((explode(",",$ticket->files)) as $key => $file)
-                                @php $file_detail = \App\Models\Upload::where('id', $file)->first(); @endphp
-                                @if($file_detail != null)
-                                    <a href="{{ uploaded_asset($file) }}" download="" class="badge badge-lg badge-inline badge-light mb-1">
-                                        <i class="las la-download text-muted">{{ $file_detail->file_original_name.'.'.$file_detail->extension }}</i>
+                                </td>
+                                <td><a class="btn btn-soft-primary btn-sm" href="{{route('cancel_order', encrypt($order_detail->id))}}" title="{{ translate('Order Cancel') }}">
+                                        Order Cancel
                                     </a>
-                                    <br>
-                                @endif
-                            @endforeach
-                        </div>
-                    </li> --}}
-                </ul>
-            </div>
+                                </td>
+                            </tr>
+                        @endif
+                    {{-- @endforeach --}}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

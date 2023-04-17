@@ -81,6 +81,7 @@ class SupportTicketController extends Controller
         $ticket->user_id = auth()->user()->id;
         $ticket->subject = $request->subject;
         $ticket->details = $request->details;
+        $ticket->product_id = $request->product_id;
         if ($request->attachments != null && $request->attachments != "") {
             //  dd($request->attachments->getRealPath());
             $type = array(

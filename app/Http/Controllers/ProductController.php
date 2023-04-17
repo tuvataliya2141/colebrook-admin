@@ -196,7 +196,7 @@ class ProductController extends Controller
         $product->return_days  = $request->return_days;
         $product->replace_days  = $request->replace_days;
         $product->weight  = $request->weight;
-        $product->sku  = $request->sku;
+        // $product->sku  = $request->sku;
         $product->hsn_code  = $request->hsn_code;
         $product->shipment_length  = $request->shipment_length;
         $product->shipment_width  = $request->shipment_width;
@@ -311,14 +311,14 @@ class ProductController extends Controller
 
         //VAT & Tax
         // Code cange by Tarun on 02-fab-22 CR#2 - start
-        if($request->additional_id) {
-            foreach($request->additional_id as $vl){
-                $product_tax = new AdditionalCategory;
-                $product_tax->category_id = $vl;
-                $product_tax->product_id = $product->id;
-                $product_tax->save();
-            }
-        }
+        // if($request->additional_id) {
+        //     foreach($request->additional_id as $vl){
+        //         $product_tax = new AdditionalCategory;
+        //         $product_tax->category_id = $vl;
+        //         $product_tax->product_id = $product->id;
+        //         $product_tax->save();
+        //     }
+        // }
         // Code cange by Tarun on 02-fab-22 CR#2 - end
         if($request->tax_id) {
             foreach ($request->tax_id as $key => $val) {
@@ -387,7 +387,7 @@ class ProductController extends Controller
             $product_stock->product_id  = $product->id;
             $product_stock->variant     = '';
             $product_stock->price       = $request->unit_price;
-            $product_stock->sku         = $request->sku;
+            // $product_stock->sku         = $request->sku;
             $product_stock->qty         = $request->current_stock;
             $product_stock->save();
         }
@@ -729,15 +729,15 @@ class ProductController extends Controller
             }
         }
         // Code cange by Tarun on 02-fab-22 CR#2 - start
-        if($request->additional_id) {
-            AdditionalCategory::where('product_id', $product->id)->delete();
-            foreach($request->additional_id as $vl){
-                $product_tax = new AdditionalCategory;
-                $product_tax->category_id = $vl;
-                $product_tax->product_id = $product->id;
-                $product_tax->save();
-            }
-        }
+        // if($request->additional_id) {
+        //     AdditionalCategory::where('product_id', $product->id)->delete();
+        //     foreach($request->additional_id as $vl){
+        //         $product_tax = new AdditionalCategory;
+        //         $product_tax->category_id = $vl;
+        //         $product_tax->product_id = $product->id;
+        //         $product_tax->save();
+        //     }
+        // }
         // Code cange by Tarun on 02-fab-22 CR#2 - end
 
         // Product Translations

@@ -603,4 +603,61 @@ class OrderController extends Controller
             ]);
         } 
     }
+
+    public function order_cancel(Request $request)
+    {
+        $awb_numbers = $request->awb_numbers;
+        // dd($pincode);
+        if ($awb_numbers) {
+
+            $jsonData = '  {
+                "data":{
+                    "awb_numbers" : "'. $awb_numbers .'",
+                    "access_token" : "5a7b40197cd919337501dd6e9a3aad9a",
+                    "secret_key" : "2b54c373427be180d1899400eeb21aab"
+                }
+            }';
+            // dd(json_encode($jsonData));    
+            $curl = curl_init();
+                curl_setopt_array($curl, array(
+                CURLOPT_URL             => "https://pre-alpha.ithinklogistics.com/api_v3/order/cancel.json",
+                CURLOPT_RETURNTRANSFER  => true,
+                CURLOPT_ENCODING        => "",
+                CURLOPT_MAXREDIRS       => 10,
+                CURLOPT_TIMEOUT         => 30,
+                CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST   => "POST",
+                CURLOPT_POSTFIELDS      => $jsonData,
+                CURLOPT_HTTPHEADER      => array(
+                    "cache-control: no-cache",
+                    "content-type: application/json"
+                )
+            ));
+
+            $response = curl_exec($curl);
+            $err      = curl_error($curl);
+            curl_close($curl);
+            if ($err) 
+            {
+                return response()->json([
+                    'result' => false,
+                    'message' => "cURL Error #:" . $err
+                ]);
+            }
+            else
+            {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data fatch successfully',
+                    'data' => json_decode($response)
+                ],200);
+            }
+            
+        } else {
+            return response()->json([
+                'result' => false,
+                'message' => translate('AWD numbers incorrect')
+            ]);
+        } 
+    }
 }
