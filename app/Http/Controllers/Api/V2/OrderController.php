@@ -21,6 +21,7 @@ use App\Models\State;
 class OrderController extends Controller
 {
     public function store(Request $request) {
+        // dd($request->all());
         $cartItems = Cart::where('user_id', $request->user_id)->get();
         if ($cartItems->isEmpty()) {
             return response()->json([
@@ -118,8 +119,11 @@ class OrderController extends Controller
              if($request->delivery_date){
                $order->delivery_date = $request->delivery_date;
             }
-              if($request->delivery_timeslot){
+            if($request->delivery_timeslot){
                $order->delivery_timeslot = $request->delivery_timeslot;
+            }
+            if($request->payment_order_id){
+               $order->payment_details = $request->payment_order_id;
             }
                
           
@@ -202,10 +206,8 @@ class OrderController extends Controller
             $combined_order->grand_total += $order->grand_total;
 
             if (strpos($request->payment_type, "manual_payment_") !== false) { // if payment type like  manual_payment_1 or  manual_payment_25 etc)
-
                 $order->manual_payment = 1;
                 $order->save();
-
             }
 
             $order->save();
@@ -494,6 +496,7 @@ class OrderController extends Controller
                 'message' => translate('Order code incorrect')
             ]);
         }
+        // $awb_order = '1333110027760';
         $awb_order = $order->waybill;
         if($awb_order != null){
             $jsonData = ' {
@@ -600,6 +603,63 @@ class OrderController extends Controller
             return response()->json([
                 'result' => false,
                 'message' => translate('Pin code incorrect')
+            ]);
+        } 
+    }
+
+    public function order_cancel(Request $request)
+    {
+        $awb_numbers = $request->awb_numbers;
+        // dd($pincode);
+        if ($awb_numbers) {
+
+            $jsonData = '  {
+                "data":{
+                    "awb_numbers" : "'. $awb_numbers .'",
+                    "access_token" : "5a7b40197cd919337501dd6e9a3aad9a",
+                    "secret_key" : "2b54c373427be180d1899400eeb21aab"
+                }
+            }';
+            // dd(json_encode($jsonData));    
+            $curl = curl_init();
+                curl_setopt_array($curl, array(
+                CURLOPT_URL             => "https://pre-alpha.ithinklogistics.com/api_v3/order/cancel.json",
+                CURLOPT_RETURNTRANSFER  => true,
+                CURLOPT_ENCODING        => "",
+                CURLOPT_MAXREDIRS       => 10,
+                CURLOPT_TIMEOUT         => 30,
+                CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST   => "POST",
+                CURLOPT_POSTFIELDS      => $jsonData,
+                CURLOPT_HTTPHEADER      => array(
+                    "cache-control: no-cache",
+                    "content-type: application/json"
+                )
+            ));
+
+            $response = curl_exec($curl);
+            $err      = curl_error($curl);
+            curl_close($curl);
+            if ($err) 
+            {
+                return response()->json([
+                    'result' => false,
+                    'message' => "cURL Error #:" . $err
+                ]);
+            }
+            else
+            {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Data fatch successfully',
+                    'data' => json_decode($response)
+                ],200);
+            }
+            
+        } else {
+            return response()->json([
+                'result' => false,
+                'message' => translate('AWD numbers incorrect')
             ]);
         } 
     }

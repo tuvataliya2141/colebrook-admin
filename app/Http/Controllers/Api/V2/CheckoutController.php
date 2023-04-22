@@ -133,6 +133,7 @@ class CheckoutController
 
     public function checkout(Request $request)
     {
+        
         $cart = Cart::where('user_id',$request->user_id);
         if(count($cart->get()) > 0){
             $address = Address::updateOrCreate([
@@ -155,7 +156,7 @@ class CheckoutController
                 'postal_code' => $request->postal_code,
                 'phone' => $request->phone,
             ]);
-
+            
             if($request->address_same_type != 0){
                 $cart = $cart->update([
                     'temp_user_id' => null,

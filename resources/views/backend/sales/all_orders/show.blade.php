@@ -7,9 +7,7 @@
         <h1 class="h2 fs-16 mb-0">{{ translate('Order Details') }}</h1>
     </div>
     <div class="card-body">
-        <div class="row gutters-5">
-            <div class="col text-center text-md-left">
-            </div>
+        <div class="row gutters-5 mb-20">
             @php
                 $delivery_status = $order->delivery_status;
                 $payment_status = $order->payment_status;
@@ -41,40 +39,58 @@
                 <label for="update_tracking_code">{{translate('Tracking Code (optional)')}}</label>
                 <input type="text" class="form-control" id="update_tracking_code" value="{{ $order->tracking_code }}">
             </div>
-        </div>
-        <!-- added and modifed by Arun on 04-Dec-21-->
-        <div class="row gutters-5">
             <div class="col text-center text-md-left">
-                <table width=80%><tr><td>
-                <address>
-                    <strong class="text-main">Recipient Info</strong><br><br>
-                    <strong class="text-main">{{ json_decode($order->shipping_address)->name }}</strong><br>
-                    {{ json_decode($order->shipping_address)->email }}<br>
-                    {{ json_decode($order->shipping_address)->phone }}<br>
-                    {{ json_decode($order->shipping_address)->address }}, {{ json_decode($order->shipping_address)->city }}, {{ json_decode($order->shipping_address)->postal_code }}<br>
-                    {{ json_decode($order->shipping_address)->country }}
-                </address>
-                </td>.<td>
-                </td>.<td>
-                </td><td valign=top>
-                    <strong class="text-main">Sender Info</strong><br><br>
-                    <strong class="text-main">Kingoodie</strong><br>
-                    {{ $order->sender_adrs }}<br>
+            </div>
+        </div>
+        <div class="mb-3">
+            {{-- @php
+                                $removedXML = '<?xml version="1.0" encoding="UTF-8"?>';
+                            @endphp
+                            {!! str_replace($removedXML,"", QrCode::size(100)->generate($order->code)) !!} --}}
+        </div>
 
-                </td>
-                </tr>
+        <!-- added and modifed by Arun on 04-Dec-21-->
+        <div class="row gutters-5 mt-20">
+            <div class="col-md-6 text-center text-md-left">
+                <table width=100%>
+                    <tr>
+                        <td>
+                            <address>
+                                <strong class="text-main">Recipient Info</strong><br><br>
+                                <strong class="text-main">{{ json_decode($order->shipping_address)->name }}</strong><br>
+                                {{ json_decode($order->shipping_address)->email }}<br>
+                                {{ json_decode($order->shipping_address)->phone }}<br>
+                                {{ json_decode($order->shipping_address)->address }}, {{ json_decode($order->shipping_address)->city }}, {{ json_decode($order->shipping_address)->postal_code }}<br>
+                                {{ json_decode($order->shipping_address)->country }}
+                            </address>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td valign=top>
+                            <strong class="text-main">Sender Info</strong><br><br>
+                            <strong class="text-main">Kingoodie</strong><br>
+                            {{ get_setting('contact_address') }}<br>
+                        </td>
+                        {{-- <td valign=top>
+                            <strong class="text-main">Delivery Info</strong><br><br>
+                            <strong class="text-main">{{ $order->delivery_type}}</strong><br>
+                            {{ $order->delivery_date }}<br>
+                            {{ $order->delivery_timeslot }}<br>
+
+                        </td> --}}
+                    </tr>
                 </table>
-                <!-- added and modifed by Arun on 04-Dec-21-->
-                @if ($order->manual_payment && is_array(json_decode($order->manual_payment_data, true)))
+                
+                {{-- @if ($order->manual_payment && is_array(json_decode($order->manual_payment_data, true)))
                 <br>
                 <strong class="text-main">{{ translate('Payment Information') }}</strong><br>
                 {{ translate('Name') }}: {{ json_decode($order->manual_payment_data)->name }}, {{ translate('Amount') }}: {{ single_price(json_decode($order->manual_payment_data)->amount) }}, {{ translate('TRX ID') }}: {{ json_decode($order->manual_payment_data)->trx_id }}
                 <br>
                 <a href="{{ uploaded_asset(json_decode($order->manual_payment_data)->photo) }}" target="_blank"><img src="{{ uploaded_asset(json_decode($order->manual_payment_data)->photo) }}" alt="" height="100"></a>
-                @endif
+                @endif --}}
             </div>
-            <div class="col-md-4 ml-auto">
-                <table>
+            <div class="col-md-4">
+                <table width=80%>
                     <tbody>
                         <tr>
                             <td class="text-main text-bold">{{translate('Order #')}}</td>
@@ -120,10 +136,6 @@
                             <th width="10%">{{translate('Photo')}}</th>
                             <th class="text-uppercase">{{translate('Description')}}</th>
                             <th data-breakpoints="lg" class="text-uppercase">{{translate('Delivery Type')}}</th>
-                            {{-- Code cange by Brijesh on 21-fab-22 CR#2 - start --}}
-                            <th data-breakpoints="lg" class="text-uppercase">{{translate('Text Message')}}</th>
-                            <th data-breakpoints="lg" class="text-uppercase">{{translate('Uploaded File')}}</th>
-                            {{-- Code cange by Brijesh on 21-fab-22 CR#2 - end --}}
                             <th data-breakpoints="lg" class="min-col text-center text-uppercase">{{translate('Qty')}}</th>
                             <th data-breakpoints="lg" class="min-col text-center text-uppercase">{{translate('Price')}}</th>
                             <th data-breakpoints="lg" class="min-col text-right text-uppercase">{{translate('Total')}}</th>
@@ -135,15 +147,15 @@
                             <td>{{ $key+1 }}</td>
                             <td>
                                 @if ($orderDetail->product != null)
-                                    <a href="#" target="_blank"><img height="50" src="{{ uploaded_asset($orderDetail->product->thumbnail_img) }}"></a>                                
+                                    <img height="50" src="{{ uploaded_asset($orderDetail->product->thumbnail_img) }}">                              
                                 @else
                                     <strong>{{ translate('N/A') }}</strong>
                                 @endif
                             </td>
                             <td>
                                 @if ($orderDetail->product != null)
-                                    <strong><a href="#" target="_blank" class="text-muted">{{ $orderDetail->product->getTranslation('name') }}</a></strong>
-                                    <small>{{ $orderDetail->variation }}</small>                                
+                                    <strong>{{ $orderDetail->variation }} </strong>
+                                                                   
                                 @else
                                     <strong>{{ translate('Product Unavailable') }}</strong>
                                 @endif
@@ -160,24 +172,6 @@
                                 @endif
                                 @endif
                             </td>
-                            {{-- Code cange by Brijesh on 21-fab-22 CR#2 - start --}}
-                            <td>
-                                @if($orderDetail->text_message)
-                                    {{ $orderDetail->text_message }}
-                                @else
-                                    No Messages
-                                @endif
-                            </td>
-                            <td>
-                                @if($orderDetail->file_upload)
-                                    <a class="btn btn-soft-info btn-icon btn-circle btn-sm" download href="{{ asset('uploads/personalized_gifts/'. $orderDetail->file_upload) }}" title="{{ translate('Download Files') }}">
-                                        <i class="las la-download"></i>
-                                    </a>
-                                @else
-                                    No Files
-                                @endif
-                            </td>
-                            {{-- Code cange by Brijesh on 21-fab-22 CR#2 - end --}}
                             <td class="text-center">{{ $orderDetail->quantity }}</td>
                             <td class="text-center">{{ single_price($orderDetail->price/$orderDetail->quantity) }}</td>
                             <td class="text-center">{{ single_price($orderDetail->price) }}</td>

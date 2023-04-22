@@ -13,7 +13,7 @@
                 <input type="hidden" name="lang" value="{{ $lang }}">
                 @csrf
                 <div class="card">
-                    <ul class="nav nav-tabs nav-fill border-light">
+                    {{-- <ul class="nav nav-tabs nav-fill border-light">
                         @foreach (\App\Models\Language::all() as $key => $language)
                         <li class="nav-item">
                             <a class="nav-link text-reset @if ($language->code == $lang) active @else bg-soft-dark border-light border-left-0 @endif py-3" href="{{ route('products.admin.edit', ['id'=>$product->id, 'lang'=> $language->code] ) }}">
@@ -22,7 +22,7 @@
                             </a>
                         </li>
                         @endforeach
-                    </ul>
+                    </ul> --}}
                     <div class="card-body">
                         <div class="form-group row">
                             <label class="col-lg-3 col-from-label">{{translate('Product Name')}} <i class="las la-language text-danger" title="{{translate('Translatable')}}"></i></label>
@@ -44,7 +44,7 @@
                             </div>
                         </div>
                         <!-- Code cange by Tarun on 02-fab-22 CR#2 - start -->
-                        <div class="form-group row" id="category">
+                        {{-- <div class="form-group row" id="category">
                             <label class="col-lg-3 col-from-label">{{translate('Additional Category')}}</label>
                             <div class="col-lg-8">
                                 <select class="form-control aiz-selectpicker" multiple data-live-search="true" name="additional_id[]" id="additional_id" data-live-search="true">
@@ -60,7 +60,7 @@
                                     @endforeach
                                 </select>
                             </div>
-                        </div>
+                        </div> --}}
                         <!-- Code cange by Tarun on 02-fab-22 CR#2 - end -->
                         <div class="form-group row" id="brand">
                             <label class="col-lg-3 col-from-label">{{translate('Brand')}}</label>
@@ -762,7 +762,7 @@
                     </div>
                     <div class="card-body">
                         <label for="name">
-                            {{translate('Weight')}}
+                            {{translate('Weight (KG)')}}
                         </label>
 
                         <div class="form-row">
@@ -770,7 +770,7 @@
                                 <input type="number" lang="en" min="0" value="{{ $product->weight }}" placeholder="{{ translate('Weight') }}" name="weight" class="form-control" required>
                             </div>
                         </div>
-                        <label for="name">
+                        {{-- <label for="name">
                             {{translate('SKU')}}
                         </label>
 
@@ -778,7 +778,7 @@
                             <div class="form-group col-md-12">
                                 <input type="text" lang="en" value="{{ $product->sku }}" placeholder="{{ translate('SKU') }}" name="sku" class="form-control" required>
                             </div>
-                        </div>
+                        </div> --}}
                         <label for="name">
                             {{translate('HSN Code')}}
                         </label>
@@ -789,7 +789,7 @@
                             </div>
                         </div>
                         <label for="name">
-                            {{translate('Shipment Length')}}
+                            {{translate('Shipment Length (CM)')}}
                         </label>
 
                         <div class="form-row">
@@ -798,7 +798,7 @@
                             </div>
                         </div>
                         <label for="name">
-                            {{translate('Shipment Width')}}
+                            {{translate('Shipment Width (CM)')}}
                         </label>
 
                         <div class="form-row">
@@ -807,7 +807,7 @@
                             </div>
                         </div>
                         <label for="name">
-                            {{translate('Shipment Height')}}
+                            {{translate('Shipment Height (CM)')}}
                         </label>
 
                         <div class="form-row">

@@ -155,6 +155,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
     // All Orders
     Route::get('/all_orders', 'OrderController@all_orders')->name('all_orders.index');
     Route::get('/all_orders/{id}/show', 'OrderController@all_orders_show')->name('all_orders.show');
+    Route::get('/cancel_order{id}', 'OrderController@cancel_order')->name('cancel_order');
 
     // Inhouse Orders
     Route::get('/inhouse-orders', 'OrderController@admin_orders')->name('inhouse_orders.index');
@@ -195,6 +196,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
     Route::get('support_ticket/', 'SupportTicketController@admin_index')->name('support_ticket.admin_index');
     Route::get('support_ticket/{id}/show', 'SupportTicketController@admin_show')->name('support_ticket.admin_show');
     Route::post('support_ticket/reply', 'SupportTicketController@admin_store')->name('support_ticket.admin_store');
+    
 
     Route::resource('attributes', 'AttributeController');
     Route::get('/attributes/edit/{id}', 'AttributeController@edit')->name('attributes.edit');

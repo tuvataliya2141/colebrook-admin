@@ -144,18 +144,18 @@
 	        <table class="text-right sm-padding small strong">
 	        	<thead>
 	        		<tr>
-	        			<th width="60%"></th>
-	        			<th width="40%"></th>
+	        			<th width="100%"></th>
+	        			{{-- <th width="40%"></th> --}}
 	        		</tr>
 	        	</thead>
 		        <tbody>
 			        <tr>
-			            <td class="text-left">
+			            {{-- <td class="text-left">
                             @php
                                 $removedXML = '<?xml version="1.0" encoding="UTF-8"?>';
                             @endphp
                             {!! str_replace($removedXML,"", QrCode::size(100)->generate($order->code)) !!}
-			            </td>
+			            </td> --}}
 			            <td>
 					        <table class="text-right sm-padding small strong">
 						        <tbody>

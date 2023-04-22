@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Models\Upload;
 use Illuminate\Http\Request;
 use App\Models\OrderDetail;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Image;
 use Storage;
 
@@ -81,6 +81,7 @@ class SupportTicketController extends Controller
         $ticket->user_id = auth()->user()->id;
         $ticket->subject = $request->subject;
         $ticket->details = $request->details;
+        $ticket->product_id = $request->product_id;
         if ($request->attachments != null && $request->attachments != "") {
             //  dd($request->attachments->getRealPath());
             $type = array(
@@ -208,7 +209,7 @@ class SupportTicketController extends Controller
         // dd($array);
         // dd(User::where('user_type', 'admin')->first()->email);
         try {
-            Mail::to(User::where('user_type', 'admin')->first()->email)->queue(new SupportMailManager($array));
+            Mail::to(User::where('user_type', 'admin')->first()->email)->send(new SupportMailManager($array));
         } catch (\Exception $e) {
             // dd($e->getMessage());
         }
