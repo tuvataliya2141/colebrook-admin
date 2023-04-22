@@ -10,6 +10,13 @@ use App\Models\ProductStock;
 use App\Models\OrderDetail;
 use App\Models\User;
 use App\Models\CombinedOrder;
+use PayPal\Api\Amount;
+use PayPal\Api\Refund;
+use PayPal\Api\Payment;
+use PayPal\Exception\PayPalConnectionException;
+use Razorpay\Api\Api;
+use Stripe\Stripe;
+// use Stripe\Refund;
 use Auth;
 use DB;
 
@@ -351,6 +358,74 @@ class OrderController extends Controller
     {
         $orderID = decrypt($orderId);
         $order = Order::where('id', $orderID)->first();
+        // dd($order);
+        if($order->payment_type == 'Razorpay'){
+            // $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+            
+            // $order_id = "pay_LfBZ6dn005RnhY"; // Replace with your order ID
+
+            // $razorpayOrder = $api->order->fetch($order_id);
+            // dd($razorpayOrder);
+            // if ($razorpayOrder->status === 'created') {
+            //     $api->order->cancel($order_id);
+            //     $refund = $api->refund->create([
+            //         'payment_id' => $razorpayOrder->payments[0]->id,
+            //         'amount' => $razorpayOrder->amount_paid,
+            //         'notes' => [
+            //             'reason' => 'Order cancelled'
+            //         ]
+            //     ]);
+            // }
+        }elseif($order->payment_type == 'Stripe'){
+            // Stripe::setApiKey(env('STRIPE_SECRET'));
+
+            // $charge_id = 'ch_12345'; // Replace with your charge ID
+
+            // $refund = Refund::create([
+            //     'charge' => $charge_id,
+            // ]);
+
+            // if ($refund->status == 'succeeded') {
+            //     echo 'Refund succeeded';
+            // } else {
+            //     echo 'Refund failed';
+            // }
+
+        }elseif($order->payment_type == 'Paypal'){
+            $apiContext = new \PayPal\Rest\ApiContext(
+                new \PayPal\Auth\OAuthTokenCredential(
+                    'AQ--tCY2U0vaYX5l4J5ugzv-bH1COHRa7t6ajPd9YCkyQE0wpbnBGeB9IrjFQd0oZ2kPdUkLCEin0ly_',
+                    'EJjBXx65TqBrxJmstrYxT5QBEhbXejo8pA8mGtD_w7fIzwPDdcFoobEcmIZ_V6gSPcGEJptyzvHgGae3'
+                )
+            );
+            // dd($apiContext);
+            try {
+                // Retrieve the payment object from PayPal
+                $payment = Payment::get($order->payment_details, $apiContext);
+                
+                // Get the payment amount
+                $amount = $payment->getTransactions()[0]->getAmount()->getTotal();
+                dd($amount);
+                // Create a new refund object
+                $refund = new Refund();
+                $refund->setAmount(new Amount([
+                    'total' => $amount,
+                    'currency' => 'USD'
+                ]));
+        
+                // Process the refund
+                $sale = $payment->getTransactions()[0]->getRelatedResources()[0]->getSale();
+                $refundResult = $sale->refund($refund, $apiContext);
+        
+                // Output the refund status
+                echo "Refund status: " . $refundResult->getState();
+            } catch (PayPalConnectionException $ex) {
+                // Handle any errors
+                echo $ex->getMessage();
+            }
+
+        }
+        dd($order);
         if ($order->waybill) {
             $awb_numbers = $order->waybill;
             $jsonData = '  {

@@ -1,7 +1,26 @@
 
 
 <?php $__env->startSection('content'); ?>
-
+<style>
+    .message-right {
+        text-align: right;
+        background-color: #f1faff;
+        max-width: 400px;
+        border-radius: 0.475rem;
+        padding: 10px;
+        margin-left: auto;
+        font-size: 15px;
+    }
+    .message-left {
+    text-align: left;
+    background-color: #f8f5ff;
+    max-width: 400px;
+    border-radius: 0.475rem;
+    padding: 10px;
+    margin-right: auto;
+    font-size: 15px;
+}
+</style>
 <div class="col-lg-10 mx-auto">
     <div class="card">
         <div class="card-header row gutters-5">
@@ -33,11 +52,11 @@
                                     <div class="media-body">
                                         <div class="">
                                             <span class="text-bold h6"><?php echo e($ticket->user->name); ?></span>
-                                            <p class="text-muted text-sm fs-11"><?php echo e($ticket->created_at); ?></p>
+                                            <p class="text-muted text-sm fs-11"><?php echo e($ticket->created_at->diffForHumans()); ?></p>
                                         </div>
                                     </div>
                                 </div>
-                                <div>
+                                <div class="message-left">
                                     <?php echo $ticket->details; ?>
                                     <br>
                                     <?php $__currentLoopData = (explode(",",$ticket->files)); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $file): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -60,21 +79,22 @@
                                     <div class="col-12">
                                         <span class="float-right">
                                             <div class="media">
-                                                <a class="media-left" href="#">
-                                                    <?php if($ticketreply->user->avatar_original != null): ?>
-                                                        <span class="avatar avatar-sm mr-3"><img src="<?php echo e(uploaded_asset($ticketreply->user->avatar_original)); ?>"></span>
-                                                    <?php else: ?>
-                                                        <span class="avatar avatar-sm mr-3"><img src="<?php echo e(static_asset('assets/img/avatar-place.png')); ?>"></span>
-                                                    <?php endif; ?>
-                                                </a>
-                                                <div class="media-body">
+                                                <div class="media-body" style="text-align: end;">
                                                     <div class="">
                                                         <span class="text-bold h6"><?php echo e($ticketreply->user->name); ?></span>
-                                                        <p class="text-muted text-sm fs-11"><?php echo e($ticketreply->created_at); ?></p>
+                                                        <p class="text-muted text-sm fs-11"><?php echo e($ticketreply->created_at->diffForHumans()); ?></p>
                                                     </div>
                                                 </div>
+                                                <a class="media-left" href="#">
+                                                    <?php if($ticketreply->user->avatar_original != null): ?>
+                                                        <span class="avatar avatar-sm ml-3"><img src="<?php echo e(uploaded_asset($ticketreply->user->avatar_original)); ?>"></span>
+                                                    <?php else: ?>
+                                                        <span class="avatar avatar-sm ml-3"><img src="<?php echo e(static_asset('assets/img/avatar-place.png')); ?>"></span>
+                                                    <?php endif; ?>
+                                                </a>
+                                                
                                             </div>
-                                            <div class="">
+                                            <div class="message-right">
                                                 <?php echo $ticketreply->details; ?>
             
                                                 <div class="mt-3">
@@ -107,11 +127,11 @@
                                             <div class="media-body">
                                                 <div class="">
                                                     <span class="text-bold h6"><?php echo e($ticketreply->user->name); ?></span>
-                                                    <p class="text-muted text-sm fs-11"><?php echo e($ticketreply->created_at); ?></p>
+                                                    <p class="text-muted text-sm fs-11"><?php echo e($ticketreply->created_at->diffForHumans()); ?></p>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="">
+                                        <div class="message-left">
                                             <?php echo $ticketreply->details; ?>
 
                                             <div class="mt-3">

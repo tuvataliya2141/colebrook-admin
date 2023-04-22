@@ -21,6 +21,7 @@ use App\Models\State;
 class OrderController extends Controller
 {
     public function store(Request $request) {
+        // dd($request->all());
         $cartItems = Cart::where('user_id', $request->user_id)->get();
         if ($cartItems->isEmpty()) {
             return response()->json([
@@ -118,8 +119,11 @@ class OrderController extends Controller
              if($request->delivery_date){
                $order->delivery_date = $request->delivery_date;
             }
-              if($request->delivery_timeslot){
+            if($request->delivery_timeslot){
                $order->delivery_timeslot = $request->delivery_timeslot;
+            }
+            if($request->payment_order_id){
+               $order->payment_details = $request->payment_order_id;
             }
                
           
@@ -202,10 +206,8 @@ class OrderController extends Controller
             $combined_order->grand_total += $order->grand_total;
 
             if (strpos($request->payment_type, "manual_payment_") !== false) { // if payment type like  manual_payment_1 or  manual_payment_25 etc)
-
                 $order->manual_payment = 1;
                 $order->save();
-
             }
 
             $order->save();
@@ -494,6 +496,7 @@ class OrderController extends Controller
                 'message' => translate('Order code incorrect')
             ]);
         }
+        // $awb_order = '1333110027760';
         $awb_order = $order->waybill;
         if($awb_order != null){
             $jsonData = ' {

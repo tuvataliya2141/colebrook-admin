@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Models\Upload;
 use Illuminate\Http\Request;
 use App\Models\OrderDetail;
-use Mail;
+use Illuminate\Support\Facades\Mail;
 use Image;
 use Storage;
 
@@ -209,7 +209,7 @@ class SupportTicketController extends Controller
         // dd($array);
         // dd(User::where('user_type', 'admin')->first()->email);
         try {
-            Mail::to(User::where('user_type', 'admin')->first()->email)->queue(new SupportMailManager($array));
+            Mail::to(User::where('user_type', 'admin')->first()->email)->send(new SupportMailManager($array));
         } catch (\Exception $e) {
             // dd($e->getMessage());
         }

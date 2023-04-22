@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\Contact;
 use App\Models\Subscriber;
 use Illuminate\Http\Request;
-use Mail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Notifications\Messages\MailMessage;
 use App\Mail\EmailManager;
+use App\Mail\SecondEmailVerifyMailManager;
 
 class ContactController extends Controller
 {
@@ -57,7 +59,8 @@ class ContactController extends Controller
         $array['content'] = "This is a test email.";
 
         try {
-            Mail::to($request->email)->queue(new EmailManager($array));
+            Mail::to($request->email)->send(new EmailManager($array));
+            // Mail::to($email)->queue(new SecondEmailVerifyMailManager($array));
         } catch (\Exception $e) {
             dd($e);
         }
@@ -81,22 +84,22 @@ class ContactController extends Controller
         } else {
             // dd($request->all());
             $this->subscribeEmail($request->email);
-            // dd('done');
-            $subscribe = Subscriber::create([
-                'email' => $request->email,
-            ]);
+            dd('done');
+            // $subscribe = Subscriber::create([
+            //     'email' => $request->email,
+            // ]);
             
-            if($subscribe){
-                return response()->json([
-                    'status' => true,
-                    'message'  => 'Your form subscribe'
-                ],201);
-            }else{
-                return response()->json([
-                    'status' =>false,
-                    'message'  => 'Your form not subscribe Please Try again'
-                ],404);
-            }
+            // if($subscribe){
+            //     return response()->json([
+            //         'status' => true,
+            //         'message'  => 'Your form subscribe'
+            //     ],201);
+            // }else{
+            //     return response()->json([
+            //         'status' =>false,
+            //         'message'  => 'Your form not subscribe Please Try again'
+            //     ],404);
+            // }
         }
     }
 
@@ -107,12 +110,22 @@ class ContactController extends Controller
         $array['content'] = "Thanks for subscription";
         // dd($email);
         try {
-            Mail::to($email)->queue(new EmailManager($array));
+            Mail::to($email)->send(new EmailManager($array));
+            // $send = Mail::to($email)->queue(new SecondEmailVerifyMailManager($array));
         } catch (\Exception $e) {
             dd($e);
         }
 
-        flash(translate('An email has been sent.'))->success();
-        return back();
+        // $array['view'] = 'emails.subscribe';
+        // $array['subject'] = translate('Email Subscribe');
+        // $array['content'] = translate("Thanks for subscription");
+
+        // return (new MailMessage)
+        //     ->view('emails.subscribe', ['array' => $array])
+        //     ->line('Mail: '.$email)
+        //     ->subject(translate('Email Subscribe - ').env('APP_NAME'));
+
+        // flash(translate('An email has been sent.'))->success();
+        // return back();
     }
 }
