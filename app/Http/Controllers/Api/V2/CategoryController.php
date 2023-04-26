@@ -53,6 +53,42 @@ class CategoryController extends Controller
         // return Cache::remember("app.categories-$parent_id", 86400, function() use ($parent_id){
             $response = new CategoryCollection(Category::where('parent_id', $parent_id)->get());
             $logo = get_setting('header_logo');
+            $headerLogo = get_setting('header_logo');
+            $footerLogo = get_setting('footer_logo');
+            $facebook = get_setting('facebook_link');
+            if($facebook == '' || $facebook == '#'){
+                $facebook = '';
+            } else {
+                $facebook = $facebook;
+            }
+            $twitter = get_setting('twitter_link');
+            if($twitter == '' || $twitter == '#'){
+                $twitter = '';
+            } else {
+                $twitter = $twitter;
+            }
+            $instagram = get_setting('instagram_link');
+            if($instagram == '' || $instagram == '#'){
+                $instagram = '';
+            } else {
+                $instagram = $instagram;
+            }
+            $youtube = get_setting('youtube_link');
+            if($youtube == '' || $youtube == '#'){
+                $youtube = '';
+            } else {
+                $youtube = $youtube;
+            }
+            $linkedin = get_setting('linkedin_link');
+            if($linkedin == '' || $linkedin == '#'){
+                $linkedin = '';
+            } else {
+                $linkedin = $linkedin;
+            }
+            $footerAddress = get_setting('contact_address');
+            $footerPhone = get_setting('contact_phone');
+            $footerEmail = get_setting('contact_email');
+            $footerDesc = get_setting('about_us_description');
             $banner_1_imags = [];
             $banner_img = [];
             if(get_setting('home_banner1_images') != null){
@@ -68,6 +104,17 @@ class CategoryController extends Controller
                 return response()->json([
                     'status' => true,
                     'logo' => uploaded_asset($logo),
+                    'headerLogo' => uploaded_asset($headerLogo),
+                    'footerLogo' => uploaded_asset($footerLogo),
+                    'facebook' => $facebook,
+                    'twitter' => $twitter,
+                    'instagram' => $instagram,
+                    'youtube' => $youtube,
+                    'linkedin' => $linkedin,
+                    'footerAddress' => $footerAddress,
+                    'footerPhone' => $footerPhone,
+                    'footerEmail' => $footerEmail,
+                    'footerDesc' => strip_tags($footerDesc),
                     'banner_img' => $banner_img,
                     'message' => 'Category Fatch successfully',
                     'data' => $response
@@ -76,6 +123,17 @@ class CategoryController extends Controller
                 return response()->json([
                     'status' => false,
                     'logo' => uploaded_asset($logo),
+                    'headerLogo' => uploaded_asset($headerLogo),
+                    'headerLogo' => uploaded_asset($headerLogo),
+                    'facebook' => $facebook,
+                    'twitter' => $twitter,
+                    'instagram' => $instagram,
+                    'youtube' => $youtube,
+                    'linkedin' => $linkedin,
+                    'footerAddress' => $footerAddress,
+                    'footerPhone' => $footerPhone,
+                    'footerEmail' => $footerEmail,
+                    'footerDesc' => strip_tags($footerDesc),
                     'banner_img' => $banner_img,
                     'message' => 'Category Fatch Fail',
                     'data' => []

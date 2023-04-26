@@ -17,6 +17,7 @@ use App\Models\CombinedOrder;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\State;
+use Razorpay\Api\Api;
 
 class OrderController extends Controller
 {
@@ -30,7 +31,7 @@ class OrderController extends Controller
                 'message' => translate('Cart is Empty')
             ]);
         }
-        
+
         $address = Address::where('id', $cartItems->first()->address_id)->first();
         
         $user = User::find($request->user_id);
@@ -92,7 +93,7 @@ class OrderController extends Controller
             $order = new Order;
             $order->combined_order_id = $combined_order->id;
             $order->user_id = $user->id;
-            $order->shipping_address = json_encode($shippingAddress);
+            $order->shipping_address = json_encode($shippingAddress);            
 
             $order->payment_type = $request->payment_type;
             $order->delivery_viewed = '0';
@@ -122,8 +123,8 @@ class OrderController extends Controller
             if($request->delivery_timeslot){
                $order->delivery_timeslot = $request->delivery_timeslot;
             }
-            if($request->payment_order_id){
-               $order->payment_details = $request->payment_order_id;
+            if($request->payment_id){
+               $order->payment_details = $request->payment_id;
             }
                
           
@@ -144,23 +145,6 @@ class OrderController extends Controller
 
                 $product_variation = $cartItem['variation'];
 
-                $variationName = explode('-', $product_variation); // add new code 
-                // dd($variationName); 
-                // $product_stock = $product->stocks->where('variant', $variationName[0])->first();
-                //  dd($product_stock); 
-                //  if ($product->digital != 1 && $cartItem['quantity'] > $product_stock->min_qty) {
-                //     $order->delete();
-                //     $combined_order->delete();
-                //     return response()->json([
-                //         'combined_order_id' => 0,
-                //         'result' => false,
-                //         'message' => translate('The requested quantity is not available for ') . $product->name
-                //     ]);
-                // } elseif ($product->digital != 1) {
-                //     $product_stock->qty -= $cartItem['quantity'];
-                //     $product_stock->save();
-                // }
-                
                 $order_detail = new OrderDetail;
                 $order_detail->order_id = $order->id;
                 $order_detail->seller_id = $product->user_id;
@@ -212,6 +196,17 @@ class OrderController extends Controller
 
             $order->save();
         }
+
+        
+        if($request->payment_type == 'Razorpay') {
+            $api_key = env('RAZORPAY_KEY_ID');
+            $api_secret = env('RAZORPAY_KEY_SECRET');
+            $orderAmount = $order->grand_total * 100;
+
+            $apiRazorpay = new Api($api_key, $api_secret);
+            $apiRazorpay->payment->fetch($request->payment_id)->capture(array('amount'=>$orderAmount,'currency' => 'INR'));
+        }        
+
         $combined_order->save();
 
         $orderjsonData = $this->addJsonOrder($order, $order_detail, $seller_product);
@@ -493,60 +488,79 @@ class OrderController extends Controller
         if ($order == Null) {
             return response()->json([
                 'result' => false,
-                'message' => translate('Order code incorrect')
+                'message' => translate('Order code incorrect'),
+                'data' => []
             ]);
         }
-        // $awb_order = '1333110027760';
-        $awb_order = $order->waybill;
-        if($awb_order != null){
-            $jsonData = ' {
-                "data":{
-                    "awb_number_list"    : "'. $awb_order .'",      #List of AWB Number which you want to track.
-                    "access_token" : "8ujik47cea32ed386b1f65c85fd9aaaf",
-                    "secret_key" : "65tghjmads9dbcd892ad4987jmn602a7"
-                    }
-                }';
-            // dd(json_encode($jsonData));    
-            $curl = curl_init();
-            curl_setopt_array($curl, array(
-                CURLOPT_URL             => "https://pre-alpha.ithinklogistics.com/api_v3/order/track.json",
-                CURLOPT_RETURNTRANSFER  => true,
-                CURLOPT_ENCODING        => "",
-                CURLOPT_MAXREDIRS       => 10,
-                CURLOPT_TIMEOUT         => 30,
-                CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
-                CURLOPT_CUSTOMREQUEST   => "POST",
-                CURLOPT_POSTFIELDS      => json_encode($jsonData),
-                CURLOPT_HTTPHEADER      => array(
-                    "cache-control: no-cache",
-                    "content-type: application/json"
-                )
-            ));
+        $response = '';
+        if($order){
+            $date = strtotime("+7 day", $order->date);
+            $response = [
+                'id' => $order->id,
+                'user_id' => $order->user_id,
+                'delivery_status' => $order->delivery_status,
+                'code' => $order->code,
+                'date' => date("d-m-Y",$order->date),
+                'delivery_date' => date("d-m-Y",$date),
+            ];
+        }
+        return response()->json([
+            'status' => true,
+            'message' => 'Data fatch successfully',
+            'data' => $response
+        ],200);
 
-            $response = curl_exec($curl);
-            $err      = curl_error($curl);
-            curl_close($curl);
-            if ($err) 
-            {
-                return response()->json([
-                    'result' => false,
-                    'message' => "cURL Error #:" . $err
-                ]);
-            }
-            else
-            {
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Data fatch successfully',
-                    'data' => json_decode($response)
-                ],200);
-            }
-        } else {
-            return response()->json([
-                'result' => false,
-                'message' => translate('Order code incorrect')
-            ]);
-        }   
+        // $awb_order = '1333110027760';
+        // $awb_order = $order->waybill;
+        // if($awb_order != null){
+        //     $jsonData = ' {
+        //         "data":{
+        //             "awb_number_list"    : "'. $awb_order .'",      #List of AWB Number which you want to track.
+        //             "access_token" : "8ujik47cea32ed386b1f65c85fd9aaaf",
+        //             "secret_key" : "65tghjmads9dbcd892ad4987jmn602a7"
+        //             }
+        //         }';
+        //     // dd(json_encode($jsonData));    
+        //     $curl = curl_init();
+        //     curl_setopt_array($curl, array(
+        //         CURLOPT_URL             => "https://pre-alpha.ithinklogistics.com/api_v3/order/track.json",
+        //         CURLOPT_RETURNTRANSFER  => true,
+        //         CURLOPT_ENCODING        => "",
+        //         CURLOPT_MAXREDIRS       => 10,
+        //         CURLOPT_TIMEOUT         => 30,
+        //         CURLOPT_HTTP_VERSION    => CURL_HTTP_VERSION_1_1,
+        //         CURLOPT_CUSTOMREQUEST   => "POST",
+        //         CURLOPT_POSTFIELDS      => json_encode($jsonData),
+        //         CURLOPT_HTTPHEADER      => array(
+        //             "cache-control: no-cache",
+        //             "content-type: application/json"
+        //         )
+        //     ));
+
+        //     $response = curl_exec($curl);
+        //     $err      = curl_error($curl);
+        //     curl_close($curl);
+        //     if ($err) 
+        //     {
+        //         return response()->json([
+        //             'result' => false,
+        //             'message' => "cURL Error #:" . $err
+        //         ]);
+        //     }
+        //     else
+        //     {
+        //         return response()->json([
+        //             'status' => true,
+        //             'message' => 'Data fatch successfully',
+        //             'data' => json_decode($response)
+        //         ],200);
+        //     }
+        // } else {
+        //     return response()->json([
+        //         'result' => false,
+        //         'message' => translate('Order code incorrect')
+        //     ]);
+        // }   
     }
 
 

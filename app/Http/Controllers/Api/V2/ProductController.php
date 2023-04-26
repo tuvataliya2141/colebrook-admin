@@ -9,6 +9,7 @@ use App\Http\Resources\V2\CategoryCollection;
 use App\Http\Resources\V2\BrandCollection;
 use App\Models\Product;
 use App\Models\Color;
+use App\Models\SizeCharts;
 use Illuminate\Http\Request;
 use App\Utility\CategoryUtility;
 use App\Utility\SearchUtility;
@@ -330,6 +331,15 @@ class ProductController extends Controller
                 }
 
             }
+            $catId = $product->category_id;
+            $categories = Category::where('id', $catId)->first();
+            $sizeChart = SizeCharts::where('name', $categories->name)->first();
+            $sizeData = [];
+            $sizeImg = '';
+            if($sizeChart){
+                $sizeData = json_decode($sizeChart->size_values);
+                $sizeImg = $sizeChart->image;
+            }
             $response = [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -352,6 +362,8 @@ class ProductController extends Controller
                 'InStock' => $product->stocks[0]->qty,
                 'colors' => json_decode($product->colors),
                 'userReview' => $userReview,
+                'sizeData' => $sizeData,
+                'sizeImg' => api_asset($sizeImg),
             ];
             return response()->json([
                 'status' => true,

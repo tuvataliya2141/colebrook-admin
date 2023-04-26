@@ -77,7 +77,8 @@ class SupportTicketController extends Controller
     {
         // dd($request->all());
         $ticket = new Ticket();
-        $ticket->code = max(100000, (Ticket::latest()->first() != null ? Ticket::latest()->first()->code + 1 : 0)).date('s');
+        // $ticket->code = max(100000, (Ticket::latest()->first() != null ? Ticket::latest()->first()->code + 1 : 0)).date('s');
+        $ticket->code = random_int(100000, 999999).date('s');
         $ticket->user_id = auth()->user()->id;
         $ticket->subject = $request->subject;
         $ticket->details = $request->details;
