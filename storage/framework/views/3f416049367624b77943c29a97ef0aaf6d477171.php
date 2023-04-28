@@ -281,6 +281,16 @@
                         </ul>
                     </li>
                 <?php endif; ?>
+                
+                <?php if(Auth::user()->user_type == 'admin'): ?>
+                    <li class="aiz-side-nav-item">
+                        <a href="<?php echo e(route('size-chart.index')); ?>" class="aiz-side-nav-link <?php echo e(areActiveRoutes(['size-chart'])); ?>">
+                            <i class="las la-folder-open aiz-side-nav-icon"></i>
+                            <span class="aiz-side-nav-text"><?php echo e(translate('Size Chart')); ?></span>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
             </ul><!-- .aiz-side-nav -->
         </div><!-- .aiz-side-nav-wrap -->
     </div><!-- .aiz-sidebar -->

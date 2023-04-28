@@ -10,6 +10,8 @@ use App\Models\ProductStock;
 use App\Models\OrderDetail;
 use App\Models\User;
 use App\Models\CombinedOrder;
+use App\Models\Ticket;
+use App\Models\TicketReply;
 use PayPal\Api\Amount;
 use PayPal\Api\Refund;
 use PayPal\Api\Payment;
@@ -362,23 +364,24 @@ class OrderController extends Controller
         $orderID = decrypt($orderId);
         $order = Order::where('id', $orderID)->first();
         $amount = round(($order->grand_total / 81), 2);
-        // dd($amount);
+        // dd($order);
         if($order->payment_type == 'Razorpay'){
-            $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
-            
-            $order_id = "pay_LfBZ6dn005RnhY"; // Replace with your order ID
+            $api_key = env('RAZORPAY_KEY_ID');
+            $api_secret = env('RAZORPAY_KEY_SECRET');
 
-            $razorpayOrder = $api->order->fetch($order_id);
-            dd($razorpayOrder);
-            if ($razorpayOrder->status === 'created') {
-                $api->order->cancel($order_id);
-                $refund = $api->refund->create([
-                    'payment_id' => $razorpayOrder->payments[0]->id,
-                    'amount' => $razorpayOrder->amount_paid,
-                    'notes' => [
-                        'reason' => 'Order cancelled'
-                    ]
-                ]);
+            $api = new Api($api_key, $api_secret);
+
+            $payment_id = $order->payment_details; // Replace with the payment ID for which you want to initiate the refund
+
+            try {
+                $refund = $api->refund->create(array(
+                    'payment_id' => $payment_id,
+                    'amount' => $order->grand_total * 100
+                ));
+
+            } catch (\Exception $e) {
+                // Handle any exceptions here
+                echo $e->getMessage();
             }
         }elseif($order->payment_type == 'Stripe'){
             Stripe::setApiKey(env('STRIPE_SECRET'));
@@ -410,7 +413,7 @@ class OrderController extends Controller
             
             $refundedSale = $sale->refundSale($request, $apiContext);
         }
-
+        // dd($order);
         if ($order->waybill) {
             $awb_numbers = $order->waybill;
             $jsonData = '  {
@@ -444,6 +447,23 @@ class OrderController extends Controller
         $order->delivery_viewed = '0';
         $order->delivery_status = 'cancelled';
         $order->save();
+        
+        $ticket = Ticket::where('product_id', $orderID)->first();
+        if($ticket){
+            $repaly = "
+            Your order has been canceled successfully, you will get your refund in 7 to 8 days in your original payment method.
+
+            Thank you!";
+            $ticket_reply = new TicketReply;
+            $ticket_reply->ticket_id = $ticket->id;
+            $ticket_reply->user_id = Auth::user()->id;
+            $ticket_reply->details = $repaly;
+            $ticket_reply->save();
+
+            $ticket->status = 'solved';
+            $ticket->save();
+        }
+        
         foreach ($order->orderDetails as $key => $orderDetail) {
 
             $orderDetail->delivery_status = 'cancelled';

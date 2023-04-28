@@ -140,7 +140,14 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function(
     Route::post('/update-home-banner', 'PageController@homeBannerUpdate')->name('home-banner.update');
     Route::get('/destroy-home-banner/{id}', 'PageController@homeBannerDelete')->name('home-banner.homeBannerDelete');
 
-
+    // Size Chart
+    Route::get('/size-chart', 'SizeChartController@index')->name('size-chart.index');
+    Route::get('/add-size-chart', 'SizeChartController@add')->name('size-chart.add');
+    Route::post('/size-chart.store', 'SizeChartController@store')->name('size-chart.store');
+    Route::get('/size-chart.edit/{id}', 'SizeChartController@edit')->name('size-chart.edit');
+    Route::post('/size-chart.update', 'SizeChartController@update')->name('size-chart.update');
+    Route::get('/size-chart.destroy/{id}', 'SizeChartController@destroy')->name('size-chart.destroy');
+    
     Route::resource('roles', 'RoleController');
     Route::get('/roles/edit/{id}', 'RoleController@edit')->name('roles.edit');
     Route::get('/roles/destroy/{id}', 'RoleController@destroy')->name('roles.destroy');
