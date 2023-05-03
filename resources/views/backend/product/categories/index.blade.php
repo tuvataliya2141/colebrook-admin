@@ -31,12 +31,12 @@
                     <th >#</th>
                     <th>{{translate('Name')}}</th>
                     <th>{{ translate('Parent Category') }}</th>
-                    <th>{{ translate('Order Level') }}</th>
-                    <th >{{ translate('Level') }}</th>
+                    <!-- <th>{{ translate('Order Level') }}</th> -->
+                    <!-- <th >{{ translate('Level') }}</th> -->
                     <th >{{translate('Banner')}}</th>
                     <th >{{translate('Icon')}}</th>
-                    <th >{{translate('Featured')}}</th>
-                    <th >{{translate('Commission')}}</th>
+                    <!-- <th >{{translate('Featured')}}</th> -->
+                    <!-- <th >{{translate('Commission')}}</th> -->
                     <th width="10%" class="text-right">{{translate('Options')}}</th>
                 </tr>
             </thead>
@@ -55,8 +55,8 @@
                                 —
                             @endif
                         </td>
-                        <td>{{ $category->order_level }}</td>
-                        <td>{{ $category->level }}</td>
+                        <!-- <td>{{ $category->order_level }}</td> -->
+                        <!-- <td>{{ $category->level }}</td> -->
                         <td>
                             @if($category->banner != null)
                                 <img src="{{ uploaded_asset($category->banner) }}" alt="{{translate('Banner')}}" class="h-50px">
@@ -73,13 +73,13 @@
                                 —
                             @endif
                         </td>
-                        <td>
+                        <!-- <td>
                             <label class="aiz-switch aiz-switch-success mb-0">
                                 <input type="checkbox" onchange="update_featured(this)" value="{{ $category->id }}" <?php if($category->featured == 1) echo "checked";?>>
                                 <span></span>
                             </label>
-                        </td>
-                        <td>{{ $category->commision_rate }} %</td>
+                        </td> -->
+                        <!-- <td>{{ $category->commision_rate }} %</td> -->
                         <td class="text-right">
                             <a class="btn btn-soft-primary btn-icon btn-circle btn-sm" href="{{route('categories.edit', ['id'=>$category->id, 'lang'=>env('DEFAULT_LANGUAGE')] )}}" title="{{ translate('Edit') }}">
                                 <i class="las la-edit"></i>
@@ -99,11 +99,9 @@
 </div>
 @endsection
 
-
 @section('modal')
     @include('modals.delete_modal')
 @endsection
-
 
 @section('script')
     <script type="text/javascript">

@@ -281,7 +281,6 @@
                         </ul>
                     </li>
                 <?php endif; ?>
-                
                 <?php if(Auth::user()->user_type == 'admin'): ?>
                     <li class="aiz-side-nav-item">
                         <a href="<?php echo e(route('size-chart.index')); ?>" class="aiz-side-nav-link <?php echo e(areActiveRoutes(['size-chart'])); ?>">
