@@ -20,30 +20,30 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-3 col-from-label"><?php echo e(translate('System Logo - White')); ?></label>
+                            <label class="col-sm-3 col-from-label"><?php echo e(translate('Header Logo')); ?></label>
                             <div class="col-sm-9">
                                 <div class="input-group" data-toggle="aizuploader" data-type="image">
                                     <div class="input-group-prepend">
                                         <div class="input-group-text bg-soft-secondary"><?php echo e(translate('Browse')); ?></div>
                                     </div>
                                     <div class="form-control file-amount"><?php echo e(translate('Choose Files')); ?></div>
-                                    <input type="hidden" name="types[]" value="system_logo_white">
-                                    <input type="hidden" name="system_logo_white" value="<?php echo e(get_setting('system_logo_white')); ?>" class="selected-files">
+                                    <input type="hidden" name="types[]" value="header_logo">
+                                    <input type="hidden" name="header_logo" value="<?php echo e(get_setting('header_logo')); ?>" class="selected-files">
                                 </div>
                                 <div class="file-preview box sm"></div>
                                 <small><?php echo e(translate('Will be used in admin panel side menu')); ?></small>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label class="col-sm-3 col-from-label"><?php echo e(translate('System Logo - Black')); ?></label>
+                            <label class="col-sm-3 col-from-label"><?php echo e(translate('Footer Logo')); ?></label>
                             <div class="col-sm-9">
                                 <div class="input-group" data-toggle="aizuploader" data-type="image">
                                     <div class="input-group-prepend">
                                         <div class="input-group-text bg-soft-secondary"><?php echo e(translate('Browse')); ?></div>
                                     </div>
                                     <div class="form-control file-amount"><?php echo e(translate('Choose Files')); ?></div>
-                                    <input type="hidden" name="types[]" value="system_logo_black">
-                                    <input type="hidden" name="system_logo_black" value="<?php echo e(get_setting('system_logo_black')); ?>" class="selected-files">
+                                    <input type="hidden" name="types[]" value="footer_logo">
+                                    <input type="hidden" name="footer_logo" value="<?php echo e(get_setting('footer_logo')); ?>" class="selected-files">
                                 </div>
                                 <div class="file-preview box sm"></div>
                                 <small><?php echo e(translate('Will be used in admin panel topbar in mobile + Admin login page')); ?></small>

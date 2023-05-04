@@ -230,9 +230,14 @@
                                     <span class="badge badge-inline badge-danger"><?php echo e(translate('Unpaid')); ?></span>
                                     <?php endif; ?>
                                 </td>
-                                <td><a class="btn btn-soft-primary btn-sm" href="<?php echo e(route('cancel_order', encrypt($order_detail->id))); ?>" title="<?php echo e(translate('Order Cancel')); ?>">
-                                        Order Cancel
-                                    </a>
+                                <td>
+                                    <?php if($order_detail->delivery_status == 'cancelled'): ?>
+                                        <span class="badge badge-inline badge-danger">Cancel</span>
+                                    <?php else: ?>
+                                        <a class="btn btn-soft-primary btn-sm" href="<?php echo e(route('cancel_order', encrypt($order_detail->id))); ?>" title="<?php echo e(translate('Order Cancel')); ?>">
+                                            Order Cancel
+                                        </a>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endif; ?>

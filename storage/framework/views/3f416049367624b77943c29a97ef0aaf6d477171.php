@@ -2,8 +2,8 @@
     <div class="aiz-sidebar left c-scrollbar">
         <div class="aiz-side-nav-logo-wrap">
             <a href="<?php echo e(route('admin.dashboard')); ?>" class="d-block text-center">
-                <?php if(get_setting('system_logo_white') != null): ?>
-                    <img class="mw-100" src="<?php echo e(uploaded_asset(get_setting('system_logo_white'))); ?>" class="brand-icon" alt="<?php echo e(get_setting('site_name')); ?>">
+                <?php if(get_setting('header_logo') != null): ?>
+                    <img class="mw-100" src="<?php echo e(uploaded_asset(get_setting('header_logo'))); ?>" class="brand-icon" alt="<?php echo e(get_setting('site_name')); ?>">
                 <?php else: ?>
                     <img class="mw-100" src="<?php echo e(static_asset('assets/img/logo.png')); ?>" class="brand-icon" alt="<?php echo e(get_setting('site_name')); ?>">
                 <?php endif; ?>
@@ -281,7 +281,6 @@
                         </ul>
                     </li>
                 <?php endif; ?>
-                
                 <?php if(Auth::user()->user_type == 'admin'): ?>
                     <li class="aiz-side-nav-item">
                         <a href="<?php echo e(route('size-chart.index')); ?>" class="aiz-side-nav-link <?php echo e(areActiveRoutes(['size-chart'])); ?>">
