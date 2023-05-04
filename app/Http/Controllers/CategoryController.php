@@ -55,10 +55,7 @@ class CategoryController extends Controller
         $category = new Category;
         $category->name = $request->name;
         $category->order_level = 0;
-        if($request->order_level != null) {
-            $category->order_level = $request->order_level;
-        }
-        $category->digital = $request->digital;
+        $category->digital = 0;
         $category->banner = $request->banner;
         $category->icon = $request->icon;
         $category->meta_title = $request->meta_title;
@@ -159,10 +156,8 @@ class CategoryController extends Controller
         if($request->lang == env("DEFAULT_LANGUAGE")){
             $category->name = $request->name;
         }
-        if($request->order_level != null) {
-            $category->order_level = $request->order_level;
-        }
-        $category->digital = $request->digital;
+        $category->order_level = 0;
+        $category->digital = 0;
         $category->banner = $request->banner;
         $category->icon = $request->icon;
         $category->meta_title = $request->meta_title;

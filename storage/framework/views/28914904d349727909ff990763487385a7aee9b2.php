@@ -1,43 +1,43 @@
-@extends('backend.layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
 
 <div class="row">
     <div class="col-lg-8 mx-auto">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0 h6">{{translate('Category Information')}}</h5>
+                <h5 class="mb-0 h6"><?php echo e(translate('Category Information')); ?></h5>
             </div>
             <div class="card-body">
-                <form class="form-horizontal" action="{{ route('categories.store') }}" method="POST" enctype="multipart/form-data">
-                	@csrf
+                <form class="form-horizontal" action="<?php echo e(route('categories.store')); ?>" method="POST" enctype="multipart/form-data">
+                	<?php echo csrf_field(); ?>
                     <div class="form-group row">
-                        <label class="col-md-3 col-form-label">{{translate('Name')}}</label>
+                        <label class="col-md-3 col-form-label"><?php echo e(translate('Name')); ?></label>
                         <div class="col-md-9">
-                            <input type="text" placeholder="{{translate('Name')}}" id="name" name="name" class="form-control" required>
+                            <input type="text" placeholder="<?php echo e(translate('Name')); ?>" id="name" name="name" class="form-control" required>
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-md-3 col-form-label">{{translate('Parent Category')}}</label>
+                        <label class="col-md-3 col-form-label"><?php echo e(translate('Parent Category')); ?></label>
                         <div class="col-md-9">
                             <select class="select2 form-control aiz-selectpicker" onchange="checkCat(this.value);" name="parent_id" data-toggle="select2" data-placeholder="Choose ..." data-live-search="true">
-                                <option value="0">{{ translate('No Parent') }}</option>
-                                @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}">{{ $category->getTranslation('name') }}</option>
-                                    @foreach ($category->childrenCategories as $childCategory)
-                                        @include('categories.child_category', ['child_category' => $childCategory])
-                                    @endforeach
-                                @endforeach
+                                <option value="0"><?php echo e(translate('No Parent')); ?></option>
+                                <?php $__currentLoopData = $categories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $category): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($category->id); ?>"><?php echo e($category->getTranslation('name')); ?></option>
+                                    <?php $__currentLoopData = $category->childrenCategories; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $childCategory): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                        <?php echo $__env->make('categories.child_category', ['child_category' => $childCategory], \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
+                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                     </div>
                     <div class="form-group row" id="orderBy" style="display: none;">
-                        <label class="col-md-3 col-form-label">{{translate('Order By')}}</label>
+                        <label class="col-md-3 col-form-label"><?php echo e(translate('Order By')); ?></label>
                         <div class="col-md-9">
-                            {{-- Code cange by Brijesh on 28-April-22 CR#2 - start --}}
+                            
                             <select class="select2 form-control aiz-selectpicker" name="order_by" data-toggle="select2" data-placeholder="Choose ..." data-live-search="true">
-                                <option value="0">{{ translate('No Order By') }}</option>
+                                <option value="0"><?php echo e(translate('No Order By')); ?></option>
                                 <option value="By Price">By Price</option>
                                 <option value="By Occasion">By Occasion</option>
                                 <option value="By Type">By Type</option>
@@ -70,35 +70,36 @@
                                 <option value="Special Occasions">Special Occasions</option>
                                 <option value="Overseas Gifts">Overseas Gifts</option>
                             </select>
-                            {{-- Code cange by Brijesh on 28-April-22 CR#2 - end --}}
+                            
                         </div>
                     </div>
                     <!-- <div class="form-group row">
                         <label class="col-md-3 col-form-label">
-                            {{translate('Ordering Number')}}
+                            <?php echo e(translate('Ordering Number')); ?>
+
                         </label>
                         <div class="col-md-9">
-                            <input type="number" name="order_level" class="form-control" id="order_level" placeholder="{{translate('Order Level')}}">
-                            <small>{{translate('Higher number has high priority')}}</small>
+                            <input type="number" name="order_level" class="form-control" id="order_level" placeholder="<?php echo e(translate('Order Level')); ?>">
+                            <small><?php echo e(translate('Higher number has high priority')); ?></small>
                         </div>
                     </div> -->
                     <!-- <div class="form-group row">
-                        <label class="col-md-3 col-form-label">{{translate('Type')}}</label>
+                        <label class="col-md-3 col-form-label"><?php echo e(translate('Type')); ?></label>
                         <div class="col-md-9">
                             <select name="digital" required class="form-control aiz-selectpicker mb-2 mb-md-0">
-                                <option value="0">{{translate('Physical')}}</option>
-                                <option value="1">{{translate('Digital')}}</option>
+                                <option value="0"><?php echo e(translate('Physical')); ?></option>
+                                <option value="1"><?php echo e(translate('Digital')); ?></option>
                             </select>
                         </div>
                     </div> -->
                     <div class="form-group row">
-                        <label class="col-md-3 col-form-label" for="signinSrEmail">{{translate('Banner')}} <small>({{ translate('200x200') }})</small></label>
+                        <label class="col-md-3 col-form-label" for="signinSrEmail"><?php echo e(translate('Banner')); ?> <small>(<?php echo e(translate('200x200')); ?>)</small></label>
                         <div class="col-md-9">
                             <div class="input-group" data-toggle="aizuploader" data-type="image">
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
+                                    <div class="input-group-text bg-soft-secondary font-weight-medium"><?php echo e(translate('Browse')); ?></div>
                                 </div>
-                                <div class="form-control file-amount">{{ translate('Choose File') }}</div>
+                                <div class="form-control file-amount"><?php echo e(translate('Choose File')); ?></div>
                                 <input type="hidden" name="banner" class="selected-files">
                             </div>
                             <div class="file-preview box sm">
@@ -106,13 +107,13 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-md-3 col-form-label" for="signinSrEmail">{{translate('Icon')}} <small>({{ translate('32x32') }})</small></label>
+                        <label class="col-md-3 col-form-label" for="signinSrEmail"><?php echo e(translate('Icon')); ?> <small>(<?php echo e(translate('32x32')); ?>)</small></label>
                         <div class="col-md-9">
                             <div class="input-group" data-toggle="aizuploader" data-type="image">
                                 <div class="input-group-prepend">
-                                    <div class="input-group-text bg-soft-secondary font-weight-medium">{{ translate('Browse')}}</div>
+                                    <div class="input-group-text bg-soft-secondary font-weight-medium"><?php echo e(translate('Browse')); ?></div>
                                 </div>
-                                <div class="form-control file-amount">{{ translate('Choose File') }}</div>
+                                <div class="form-control file-amount"><?php echo e(translate('Choose File')); ?></div>
                                 <input type="hidden" name="icon" class="selected-files">
                             </div>
                             <div class="file-preview box sm">
@@ -120,49 +121,49 @@
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label class="col-md-3 col-form-label">{{translate('Meta Title')}}</label>
+                        <label class="col-md-3 col-form-label"><?php echo e(translate('Meta Title')); ?></label>
                         <div class="col-md-9">
-                            <input type="text" class="form-control" name="meta_title" placeholder="{{translate('Meta Title')}}">
+                            <input type="text" class="form-control" name="meta_title" placeholder="<?php echo e(translate('Meta Title')); ?>">
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label class="col-md-3 col-form-label">{{translate('Meta Description')}}</label>
+                        <label class="col-md-3 col-form-label"><?php echo e(translate('Meta Description')); ?></label>
                         <div class="col-md-9">
                             <textarea name="meta_description" rows="5" class="form-control"></textarea>
                         </div>
                     </div>
-                    {{-- Code cange by Brijesh on 05-April-22 CR#2 - start --}}
+                    
                     <div class="form-group row">
-                        <label class="col-md-3 col-form-label">{{translate('SEO Description')}}</label>
+                        <label class="col-md-3 col-form-label"><?php echo e(translate('SEO Description')); ?></label>
                         <div class="col-md-9">
                             <textarea name="seo_description" rows="5" class="aiz-text-editor"></textarea>
                         </div>
                     </div>
-                    {{-- Code cange by Brijesh on 05-April-22 CR#2 - end --}}
-                    @if (get_setting('category_wise_commission') == 1)
+                    
+                    <?php if(get_setting('category_wise_commission') == 1): ?>
                         <div class="form-group row">
-                            <label class="col-md-3 col-form-label">{{translate('Commission Rate')}}</label>
+                            <label class="col-md-3 col-form-label"><?php echo e(translate('Commission Rate')); ?></label>
                             <div class="col-md-9 input-group">
-                                <input type="number" lang="en" min="0" step="0.01" placeholder="{{translate('Commission Rate')}}" id="commision_rate" name="commision_rate" class="form-control">
+                                <input type="number" lang="en" min="0" step="0.01" placeholder="<?php echo e(translate('Commission Rate')); ?>" id="commision_rate" name="commision_rate" class="form-control">
                                 <div class="input-group-append">
                                     <span class="input-group-text">%</span>
                                 </div>
                             </div>
                         </div>
-                    @endif
+                    <?php endif; ?>
                     <div class="form-group row">
-                        <label class="col-md-3 col-form-label">{{translate('Filtering Attributes')}}</label>
+                        <label class="col-md-3 col-form-label"><?php echo e(translate('Filtering Attributes')); ?></label>
                         <div class="col-md-9">
                             <select class="select2 form-control aiz-selectpicker" name="filtering_attributes[]" data-toggle="select2" data-placeholder="Choose ..."data-live-search="true" multiple>
-                                @foreach (\App\Models\Attribute::all() as $attribute)
-                                    <option value="{{ $attribute->id }}">{{ $attribute->getTranslation('name') }}</option>
-                                @endforeach
+                                <?php $__currentLoopData = \App\Models\Attribute::all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $attribute): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                    <option value="<?php echo e($attribute->id); ?>"><?php echo e($attribute->getTranslation('name')); ?></option>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </div>
                     </div>
                     <div class="form-group mb-0 text-right">
-                        <button type="submit" class="btn btn-primary">{{translate('Save')}}</button>
+                        <button type="submit" class="btn btn-primary"><?php echo e(translate('Save')); ?></button>
                     </div>
                 </form>
             </div>
@@ -170,16 +171,16 @@
     </div>
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('script')
+<?php $__env->startSection('script'); ?>
 <script>
     function checkCat(val){
         $.ajax({
             type:"POST",
-            url: '{{ route('categories.checkcat') }}',
+            url: '<?php echo e(route('categories.checkcat')); ?>',
             data: {
-                "_token": "{{ csrf_token() }}",
+                "_token": "<?php echo e(csrf_token()); ?>",
                 "val": val
             },
             success: function(data){
@@ -192,4 +193,5 @@
         });
     }
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('backend.layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH D:\xampp\htdocs\colebrook-admin\resources\views/backend/product/categories/create.blade.php ENDPATH**/ ?>

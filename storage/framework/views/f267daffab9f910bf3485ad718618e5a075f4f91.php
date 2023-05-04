@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('content'); ?>
 <div class="aiz-titlebar text-left mt-2 mb-3">
     <div class="row align-items-center">
@@ -31,12 +29,12 @@
                     <th >#</th>
                     <th><?php echo e(translate('Name')); ?></th>
                     <th><?php echo e(translate('Parent Category')); ?></th>
-                    <th><?php echo e(translate('Order Level')); ?></th>
-                    <th ><?php echo e(translate('Level')); ?></th>
+                    <!-- <th><?php echo e(translate('Order Level')); ?></th> -->
+                    <!-- <th ><?php echo e(translate('Level')); ?></th> -->
                     <th ><?php echo e(translate('Banner')); ?></th>
                     <th ><?php echo e(translate('Icon')); ?></th>
-                    <th ><?php echo e(translate('Featured')); ?></th>
-                    <th ><?php echo e(translate('Commission')); ?></th>
+                    <!-- <th ><?php echo e(translate('Featured')); ?></th> -->
+                    <!-- <th ><?php echo e(translate('Commission')); ?></th> -->
                     <th width="10%" class="text-right"><?php echo e(translate('Options')); ?></th>
                 </tr>
             </thead>
@@ -56,8 +54,8 @@
                                 —
                             <?php endif; ?>
                         </td>
-                        <td><?php echo e($category->order_level); ?></td>
-                        <td><?php echo e($category->level); ?></td>
+                        <!-- <td><?php echo e($category->order_level); ?></td> -->
+                        <!-- <td><?php echo e($category->level); ?></td> -->
                         <td>
                             <?php if($category->banner != null): ?>
                                 <img src="<?php echo e(uploaded_asset($category->banner)); ?>" alt="<?php echo e(translate('Banner')); ?>" class="h-50px">
@@ -74,13 +72,13 @@
                                 —
                             <?php endif; ?>
                         </td>
-                        <td>
+                        <!-- <td>
                             <label class="aiz-switch aiz-switch-success mb-0">
                                 <input type="checkbox" onchange="update_featured(this)" value="<?php echo e($category->id); ?>" <?php if($category->featured == 1) echo "checked";?>>
                                 <span></span>
                             </label>
-                        </td>
-                        <td><?php echo e($category->commision_rate); ?> %</td>
+                        </td> -->
+                        <!-- <td><?php echo e($category->commision_rate); ?> %</td> -->
                         <td class="text-right">
                             <a class="btn btn-soft-primary btn-icon btn-circle btn-sm" href="<?php echo e(route('categories.edit', ['id'=>$category->id, 'lang'=>env('DEFAULT_LANGUAGE')] )); ?>" title="<?php echo e(translate('Edit')); ?>">
                                 <i class="las la-edit"></i>
@@ -101,11 +99,9 @@
 </div>
 <?php $__env->stopSection(); ?>
 
-
 <?php $__env->startSection('modal'); ?>
     <?php echo $__env->make('modals.delete_modal', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 <?php $__env->stopSection(); ?>
-
 
 <?php $__env->startSection('script'); ?>
     <script type="text/javascript">
