@@ -228,9 +228,14 @@
                                     <span class="badge badge-inline badge-danger">{{translate('Unpaid')}}</span>
                                     @endif
                                 </td>
-                                <td><a class="btn btn-soft-primary btn-sm" href="{{route('cancel_order', encrypt($order_detail->id))}}" title="{{ translate('Order Cancel') }}">
-                                        Order Cancel
-                                    </a>
+                                <td>
+                                    @if($order_detail->delivery_status == 'cancelled')
+                                        <span class="badge badge-inline badge-danger">Cancel</span>
+                                    @else
+                                        <a class="btn btn-soft-primary btn-sm" href="{{route('cancel_order', encrypt($order_detail->id))}}" title="{{ translate('Order Cancel') }}">
+                                            Order Cancel
+                                        </a>
+                                    @endif
                                 </td>
                             </tr>
                         @endif
