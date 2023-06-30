@@ -28,8 +28,7 @@ class BannerController extends Controller
             'data' => $bannerData
         ],200);
         // return new BannerCollection(json_decode($banner, true));
-        die;
-        return new BannerCollection(json_decode(get_setting('home_banner1_images'), true));
+        // return new BannerCollection(json_decode(get_setting('home_banner1_images'), true));
     }
     
     
